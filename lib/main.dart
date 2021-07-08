@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:argonaut_console_recommend/home.dart';
+import 'package:argonaut_console_recommend/page/home.dart';
 
 void main() => runApp(new MyApp());
 
