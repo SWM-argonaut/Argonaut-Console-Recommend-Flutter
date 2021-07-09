@@ -2,9 +2,14 @@
 
 import 'package:flutter/material.dart';
 
+import 'package:readmore/readmore.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:argonaut_console_recommend/data_class/api.dart';
+
+void _launchURL(String _url) async =>
+    await canLaunch(_url) ? await launch(_url) : throw 'Could not launch $_url';
 
 class DetailPage extends StatelessWidget {
   final Recommendation? recommendation;
@@ -13,138 +18,62 @@ class DetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
+      appBar: AppBar(
+        title: Text("${recommendation?.title}"),
+        centerTitle: true,
+      ),
+      body: SingleChildScrollView(
+          child: Column(
         children: <Widget>[
           _topContent(context, recommendation),
           _bottomContent(context, recommendation)
         ],
-      ),
+      )),
     );
   }
 }
 
-Stack _topContent(BuildContext context, Recommendation? recommendation) {
-  return Stack(
-    children: <Widget>[
-      Container(
-          padding: EdgeInsets.only(left: 10.0),
-          height: MediaQuery.of(context).size.height * 0.5,
-          decoration: new BoxDecoration(
-            image: new DecorationImage(
-              image: NetworkImage("${recommendation?.imgUrl}"),
-              fit: BoxFit.cover,
-            ),
-          )),
-      Container(
-        height: MediaQuery.of(context).size.height * 0.5,
-        padding: EdgeInsets.all(40.0),
-        width: MediaQuery.of(context).size.width,
-        decoration: BoxDecoration(color: Color.fromRGBO(58, 66, 86, .9)),
-        child: Center(
-          child: _topContentText(recommendation),
-        ),
-      ),
-      Positioned(
-        left: 8.0,
-        top: 60.0,
-        child: InkWell(
-          onTap: () {
-            Navigator.pop(context);
-          },
-          child: Icon(Icons.arrow_back, color: Colors.white),
-        ),
-      )
-    ],
-  );
-}
-
-Column _topContentText(Recommendation? recommendation) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: <Widget>[
-      SizedBox(height: 120.0),
-      Icon(
-        Icons.directions_car,
-        color: Colors.white,
-        size: 40.0,
-      ),
-      Container(
-        width: 90.0,
-        child: new Divider(color: Colors.green),
-      ),
-      SizedBox(height: 10.0),
-      Text(
-        "${recommendation?.title}",
-        style: TextStyle(color: Colors.white, fontSize: 45.0),
-      ),
-      SizedBox(height: 30.0),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          Expanded(flex: 1, child: _levelIndicator(recommendation)),
-          Expanded(
-              flex: 6,
-              child: Padding(
-                  padding: EdgeInsets.only(left: 10.0),
-                  child: Text(
-                    "${recommendation?.price}",
-                    style: TextStyle(color: Colors.white),
-                  ))),
-          Expanded(flex: 1, child: _coursePrice(recommendation))
-        ],
-      ),
-    ],
-  );
-}
-
-Container _levelIndicator(Recommendation? recommendation) {
+Container _topContent(BuildContext context, Recommendation? recommendation) {
   return Container(
-    child: Container(
-      child: LinearProgressIndicator(
-          backgroundColor: Color.fromRGBO(209, 224, 224, 0.2),
-          value: recommendation?.sentiment,
-          valueColor: AlwaysStoppedAnimation(Colors.green)),
-    ),
-  );
-}
-
-Container _coursePrice(Recommendation? recommendation) {
-  return Container(
-    padding: const EdgeInsets.all(7.0),
-    decoration: new BoxDecoration(
-        border: new Border.all(color: Colors.white),
-        borderRadius: BorderRadius.circular(5.0)),
-    child: new Text(
-      // "\$20",
-      "\$" + "${recommendation?.price}",
-      style: TextStyle(color: Colors.white),
-    ),
+    // TODO 이미지 보여주기
+    child: Text("hi"),
   );
 }
 
 Container _bottomContent(BuildContext context, Recommendation? recommendation) {
   return Container(
-    // height: MediaQuery.of(context).size.height,
-    width: MediaQuery.of(context).size.width,
-    // color: Theme.of(context).primaryColor,
-    padding: EdgeInsets.all(40.0),
-    child: Center(
-      child: Column(
-        children: <Widget>[
-          Text(
-            "${recommendation?.title}",
-            style: TextStyle(fontSize: 18.0),
-          ),
-          Padding(
-              padding: EdgeInsets.symmetric(vertical: 16.0),
-              child: ElevatedButton(
-                onPressed: () => {},
-                style: ElevatedButton.styleFrom(
-                    primary: Color.fromRGBO(58, 66, 86, 1.0)),
-                child: Text("쿠팡에서 구매", style: TextStyle(color: Colors.white)),
-              ))
-        ],
-      ),
+    padding: EdgeInsets.all(10.0),
+    child: Column(
+      children: <Widget>[
+        ReadMoreText(
+          "${recommendation?.description}",
+          trimLines: 2,
+          colorClickableText: Colors.lightBlue,
+          trimMode: TrimMode.Line,
+          trimCollapsedText: ' Show more',
+          trimExpandedText: ' Show less',
+          moreStyle: TextStyle(
+              fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
+        ),
+        Padding(
+            padding: EdgeInsets.symmetric(vertical: 16.0),
+            child: ElevatedButton(
+              onPressed: () => _launchURL("${recommendation?.coupang?.url}"),
+              style: ElevatedButton.styleFrom(
+                  primary: Color.fromRGBO(58, 66, 86, 1.0)),
+              child: Text("쿠팡에서 구매", style: TextStyle(color: Colors.white)),
+            )),
+        Padding(
+            padding: EdgeInsets.symmetric(vertical: 16.0),
+            child: ElevatedButton(
+              onPressed: () =>
+                  _launchURL("${recommendation?.nintendoStore?.url}"),
+              style: ElevatedButton.styleFrom(
+                  primary: Color.fromRGBO(58, 66, 86, 1.0)),
+              child:
+                  Text("닌텐도 스토어에서 구매", style: TextStyle(color: Colors.white)),
+            ))
+      ],
     ),
   );
 }

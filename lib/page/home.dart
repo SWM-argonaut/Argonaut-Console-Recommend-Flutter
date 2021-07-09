@@ -180,7 +180,6 @@ Card _buildCard(BuildContext context, Recommendation? item) {
 ListTile _buildListTile(BuildContext context, Recommendation? item) {
   const Color _progressIndicatorColor = Color.fromRGBO(209, 224, 224, 0.2);
   const Color _progressIndicatorValueColor = Colors.green;
-  log("${item?.thumbnailUrl}");
 
   return ListTile(
     contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
@@ -212,7 +211,7 @@ ListTile _buildListTile(BuildContext context, Recommendation? item) {
           flex: 4,
           child: Padding(
               padding: EdgeInsets.only(left: 10.0),
-              child: Text("${item?.price}",
+              child: Text("${item?.coupang?.price}",
                   style: TextStyle(color: Colors.white))),
         )
       ],
