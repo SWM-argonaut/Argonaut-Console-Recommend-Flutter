@@ -37,6 +37,8 @@ dependencies:
   url_launcher: ^6.0.9
   
   expandable: ^5.0.1
+
+  flutter_rating_bar: ^4.0.0
   
   # webview_flutter: ^2.0.9
 

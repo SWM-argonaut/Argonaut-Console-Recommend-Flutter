@@ -2,6 +2,8 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 
+import 'package:expandable/expandable.dart';
+
 import 'package:argonaut_console_recommend/block/api.dart';
 
 import 'package:argonaut_console_recommend/data_class/search.dart';
@@ -29,11 +31,32 @@ class _HomeState extends State<Home> {
   }
 
   int _selectedIndex = 0;
+  static List<Text> _titles = [
+    Text("닌텐도 스위치 게임 추천"),
+    Text("알림"),
+    Text("북마크"),
+    Text("설정"),
+  ];
   static List<Widget> _tabs = <Widget>[
     _home(),
-    Text("2"),
-    Text("3"),
-    Text("4"),
+    Center(
+      child: Text(
+        "준비중입니다.",
+        style: TextStyle(color: Colors.white),
+      ),
+    ),
+    Center(
+      child: Text(
+        "준비중입니다.",
+        style: TextStyle(color: Colors.white),
+      ),
+    ),
+    Center(
+      child: Text(
+        "준비중입니다.",
+        style: TextStyle(color: Colors.white),
+      ),
+    ),
   ];
 
   @override
@@ -41,13 +64,8 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0.1,
-        title: Text("닌텐도 스위치 게임 추천"),
-        // actions: <Widget>[
-        //   IconButton(
-        //     icon: Icon(Icons.list),
-        //     onPressed: () {},
-        //   )
-        // ],
+        title: _titles.elementAt(_selectedIndex),
+        // centerTitle: true,
       ),
       body: _tabs.elementAt(_selectedIndex),
       bottomNavigationBar: BottomAppBar(
@@ -92,16 +110,56 @@ LayoutBuilder _home() {
     const double _optionHeight = 50;
 
     double _height = constraints.maxHeight;
+    double _width = constraints.maxWidth;
 
     return Column(children: [
-      Container(
-        height: _optionHeight,
-        child: ValueListenableBuilder(
-            valueListenable: searchOptionsNoti, builder: _orderListBuilder),
-      ),
+      _options(context, _optionHeight, _width),
       Container(height: _height - _optionHeight, child: _buildList()),
     ]);
   });
+}
+
+Row _options(BuildContext context, double _height, double _width) {
+  const double _iconWidth = 50;
+
+  return Row(children: [
+    Container(
+      height: _height,
+      width: _width - _iconWidth,
+      child: ValueListenableBuilder(
+          valueListenable: searchOptionsNoti, builder: _orderListBuilder),
+    ),
+    Container(
+        height: _height,
+        width: _iconWidth,
+        alignment: Alignment.center,
+        child: ElevatedButton(
+          child: Icon(Icons.arrow_drop_down_circle_outlined),
+          style: ElevatedButton.styleFrom(primary: Colors.transparent),
+          onPressed: () {
+            showDialog(context: context, builder: _optionDetailBuilder);
+          },
+        ))
+  ]);
+}
+
+AlertDialog _optionDetailBuilder(BuildContext context) {
+  // TODO 이거 참조해서 할거 https://stackoverflow.com/questions/53913192/flutter-change-the-width-of-an-alertdialog
+
+  return AlertDialog(
+    scrollable: true,
+    title: Text('Login'),
+    content: Form(
+      child: Text("여기서 태그 수정하게 만들거"),
+    ),
+    actions: [
+      ElevatedButton(
+          child: Text("확인"),
+          onPressed: () {
+            Navigator.pop(context);
+          })
+    ],
+  );
 }
 
 ListView _orderListBuilder(BuildContext context, SearchOptions options, _) {

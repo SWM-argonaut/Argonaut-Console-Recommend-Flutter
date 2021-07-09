@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 
 import 'package:expandable/expandable.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:extended_image/extended_image.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 import 'package:argonaut_console_recommend/data_class/api.dart';
 
@@ -22,22 +23,43 @@ class DetailPage extends StatelessWidget {
         title: Text("${recommendation?.title}"),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-          child: Column(
-        children: <Widget>[
-          _topContent(context, recommendation),
-          _bottomContent(context, recommendation)
-        ],
-      )),
+      body: LayoutBuilder(builder: (BuildContext context, constraints) {
+        return SingleChildScrollView(
+            child: Column(
+          children: <Widget>[
+            _photos(context, recommendation, constraints),
+            _bottomContent(context, recommendation)
+          ],
+        ));
+      }),
     );
   }
 }
 
-Container _topContent(BuildContext context, Recommendation? recommendation) {
+Container _photos(BuildContext context, Recommendation? recommendation,
+    BoxConstraints constraints) {
   return Container(
-    // TODO 이미지 보여주기
-    child: Text("hi"),
-  );
+      height: constraints.maxHeight / 3,
+      child: ExtendedImageGesturePageView.builder(
+        itemBuilder: (BuildContext context, int index) {
+          String _url = "${recommendation?.imageUrls?[index]}";
+          Widget image = ExtendedImage.network(
+            _url,
+            cache: true,
+            fit: BoxFit.contain,
+            mode: ExtendedImageMode.gesture,
+          );
+          return Container(
+            child: image,
+            padding: EdgeInsets.all(5.0),
+          );
+        },
+        itemCount: recommendation?.imageUrls?.length,
+        controller: PageController(
+          initialPage: 0,
+        ),
+        scrollDirection: Axis.horizontal,
+      ));
 }
 
 Container _bottomContent(BuildContext context, Recommendation? recommendation) {
@@ -45,6 +67,16 @@ Container _bottomContent(BuildContext context, Recommendation? recommendation) {
     padding: EdgeInsets.all(10.0),
     child: Column(
       children: <Widget>[
+        RatingBarIndicator(
+          rating: (recommendation?.score ?? 0).toDouble(),
+          itemBuilder: (context, index) => Icon(
+            Icons.star,
+            color: Colors.amber,
+          ),
+          itemCount: 5,
+          itemSize: 50.0,
+          direction: Axis.horizontal,
+        ),
         ExpandablePanel(
           header: Text(
             "description",

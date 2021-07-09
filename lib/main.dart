@@ -4,6 +4,8 @@ import 'package:argonaut_console_recommend/page/home.dart';
 
 void main() => runApp(new MyApp());
 
+// TODO 강제 업데이트 : https://bebesoft.tistory.com/45
+
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
