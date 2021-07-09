@@ -36,7 +36,7 @@ dependencies:
   
   url_launcher: ^6.0.9
   
-  readmore: ^2.1.0
+  expandable: ^5.0.1
   
   # webview_flutter: ^2.0.9
 

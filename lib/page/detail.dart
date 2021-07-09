@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 
-import 'package:readmore/readmore.dart';
+import 'package:expandable/expandable.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
@@ -45,15 +45,20 @@ Container _bottomContent(BuildContext context, Recommendation? recommendation) {
     padding: EdgeInsets.all(10.0),
     child: Column(
       children: <Widget>[
-        ReadMoreText(
-          "${recommendation?.description}",
-          trimLines: 2,
-          colorClickableText: Colors.lightBlue,
-          trimMode: TrimMode.Line,
-          trimCollapsedText: ' Show more',
-          trimExpandedText: ' Show less',
-          moreStyle: TextStyle(
-              fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
+        ExpandablePanel(
+          header: Text(
+            "description",
+            style: TextStyle(color: Colors.white),
+          ),
+          collapsed: Text(
+            "${recommendation?.description}",
+            softWrap: true,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(color: Colors.white),
+          ),
+          expanded: Text("${recommendation?.description}",
+              softWrap: true, style: TextStyle(color: Colors.white)),
         ),
         Padding(
             padding: EdgeInsets.symmetric(vertical: 16.0),
