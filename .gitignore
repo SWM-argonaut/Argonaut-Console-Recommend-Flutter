@@ -47,4 +47,3 @@ app.*.map.json
 
 # configs
 configs.dart
-/lib/configs.dart
