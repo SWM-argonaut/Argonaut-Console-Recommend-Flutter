@@ -20,6 +20,7 @@ SearchOptionsNotifier searchOptionsNoti =
     SearchOptionsNotifier(SearchOptions());
 
 late Future<List<SwitchGame>> switchGameList;
+late TextEditingController textController;
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -32,71 +33,43 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
+    textController = new TextEditingController();
     switchGameList = getSwitchGameList(searchOptionsNoti.value);
   }
 
-  int _selectedIndex = 0;
-  static List<Text> _titles = [
-    Text("닌텐도 스위치 게임 추천", style: TextStyle(color: Colors.white)),
-    Text("알림", style: TextStyle(color: Colors.white)),
-    Text("북마크", style: TextStyle(color: Colors.white)),
-    Text("설정", style: TextStyle(color: Colors.white)),
-  ];
-  static List<Color> _appBarColor = [
-    Color.fromRGBO(1, 177, 209, 1),
-    notificationColor,
-    favoriteColor,
-    settingColor,
-  ];
-  static List<Widget> _tabs = <Widget>[
-    _home(),
-    PushList(),
-    Center(
-      child: Text(
-        "준비중입니다.",
-        style: TextStyle(color: Colors.white),
-      ),
-    ),
-    Center(
-      child: Text(
-        "준비중입니다.",
-        style: TextStyle(color: Colors.white),
-      ),
-    ),
-  ];
+  @override
+  void dispose() {
+    textController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         elevation: 0.1,
-        backgroundColor: _appBarColor.elementAt(_selectedIndex),
-        title: _titles.elementAt(_selectedIndex),
+        backgroundColor: topColor,
+        title: Text("닌텐도 스위치 게임 추천", style: TextStyle(color: Colors.white)),
+        actions: [
+          Container(
+              width: 50,
+              margin: EdgeInsets.all(7),
+              alignment: Alignment.center,
+              color: Colors.transparent,
+              child: GestureDetector(
+                child: Icon(
+                  Icons.settings,
+                  color: Colors.white,
+                  size: 30,
+                ),
+                onTap: () {
+                  showDialog(context: context, builder: _optionDetailBuilder);
+                },
+              ))
+        ],
         // centerTitle: true,
       ),
-      body: _tabs.elementAt(_selectedIndex),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: (index) => setState(() => _selectedIndex = index),
-        items: [
-          BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: "home",
-              backgroundColor: Color.fromRGBO(254, 96, 84, 1)),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.notifications),
-              label: "notifications",
-              backgroundColor: notificationColor),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.favorite),
-              label: "favorite",
-              backgroundColor: favoriteColor),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.settings),
-              label: "settings",
-              backgroundColor: settingColor),
-        ],
-      ),
+      body: _home(),
     );
   }
 }
@@ -104,15 +77,54 @@ class _HomeState extends State<Home> {
 LayoutBuilder _home() {
   return LayoutBuilder(builder: (BuildContext context, constraints) {
     const double _optionHeight = 50;
+    const double _searchBarHeight = 50;
 
     double _height = constraints.maxHeight;
     double _width = constraints.maxWidth;
 
     return Column(children: [
       _options(context, _optionHeight, _width),
-      Container(height: _height - _optionHeight, child: _buildList()),
+      Container(
+          height: _height - _optionHeight - _searchBarHeight,
+          child: _buildList()),
+      _searchBar(context, _searchBarHeight),
     ]);
   });
+}
+
+Widget _searchBar(BuildContext context, double _height) {
+  return Container(
+    height: _height,
+    color: bottomColor,
+    child: Padding(
+      padding: const EdgeInsets.only(left: 8.0),
+      child: TextField(
+        maxLines: 3,
+        controller: textController,
+        style: TextStyle(color: Colors.white),
+        decoration: InputDecoration(
+            suffixIcon: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                IconButton(
+                  icon: Icon(
+                    Icons.search,
+                    color: Colors.white,
+                  ),
+                  onPressed: () {
+                    FocusScope.of(context).requestFocus(FocusNode());
+                  },
+                ),
+              ],
+            ),
+            border: InputBorder.none,
+            hintText: "타이틀을 검색해주세요",
+            hintStyle: TextStyle(color: Colors.white)),
+      ),
+    ),
+  );
 }
 
 Container _options(BuildContext context, double _height, double _width) {
@@ -122,25 +134,10 @@ Container _options(BuildContext context, double _height, double _width) {
       child: Row(children: [
     Container(
       height: _height,
-      width: _width - _iconWidth,
+      width: _width,
       child: ValueListenableBuilder(
           valueListenable: searchOptionsNoti, builder: _orderListBuilder),
     ),
-    Container(
-        height: _height,
-        width: _iconWidth,
-        alignment: Alignment.center,
-        color: Colors.transparent,
-        child: GestureDetector(
-          child: Icon(
-            Icons.settings,
-            color: Colors.blueAccent,
-            size: _iconWidth - 10,
-          ),
-          onTap: () {
-            showDialog(context: context, builder: _optionDetailBuilder);
-          },
-        ))
   ]));
 }
 
@@ -149,17 +146,13 @@ AlertDialog _optionDetailBuilder(BuildContext context) {
 
   return AlertDialog(
     scrollable: true,
-    title: Text('Login'),
+    title: Text('설정'),
     content: Form(
-      child: Text("여기서 태그 수정하게 만들거"),
+      child: Text(
+        "이 앱은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.",
+        style: TextStyle(fontSize: 14, color: Colors.grey),
+      ),
     ),
-    actions: [
-      ElevatedButton(
-          child: Text("확인"),
-          onPressed: () {
-            Navigator.pop(context);
-          })
-    ],
   );
 }
 
