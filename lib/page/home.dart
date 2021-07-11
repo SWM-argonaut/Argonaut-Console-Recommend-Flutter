@@ -2,14 +2,13 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 
-import 'package:expandable/expandable.dart';
-
 import 'package:argonaut_console_recommend/block/api.dart';
 
 import 'package:argonaut_console_recommend/data_class/search.dart';
 import 'package:argonaut_console_recommend/data_class/api.dart';
 
 import 'package:argonaut_console_recommend/page/detail.dart';
+import 'package:argonaut_console_recommend/page/notification/notification_list.dart';
 
 SearchOptionsNotifier searchOptionsNoti =
     SearchOptionsNotifier(SearchOptions());
@@ -39,12 +38,7 @@ class _HomeState extends State<Home> {
   ];
   static List<Widget> _tabs = <Widget>[
     _home(),
-    Center(
-      child: Text(
-        "준비중입니다.",
-        style: TextStyle(color: Colors.white),
-      ),
-    ),
+    PushList(),
     Center(
       child: Text(
         "준비중입니다.",
@@ -210,7 +204,7 @@ _buildList() {
           }
 
           if (snapshot.data?.length == 0) {
-            return Center(child: Text("Empty"));
+            return Center(child: Text("서버와 통신이 되지 않습니다."));
           }
           return ListView.builder(
             scrollDirection: Axis.vertical,

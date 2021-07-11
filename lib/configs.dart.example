@@ -1,1 +1,2 @@
 const String requestURL = "requestURL";
+const String OnesiganlAppId = "YOUR-KEY";
