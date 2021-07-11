@@ -1,2 +1,10 @@
 const String requestURL = "requestURL";
 const String OnesiganlAppId = "YOUR-KEY";
+import 'package:flutter/material.dart';
+
+const String requestURL = "requestURL";
+const String OnesiganlAppId = "YOUR-KEY";
+
+Color notificationColor = Color.fromRGBO(235, 204, 96, 1);
+Color favoriteColor = Color.fromRGBO(253, 118, 124, 1);
+Color settingColor = Color.fromRGBO(109, 113, 121, 1);

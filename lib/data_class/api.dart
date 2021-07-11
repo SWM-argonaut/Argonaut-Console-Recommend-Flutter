@@ -1,88 +1,69 @@
-class Recommendation {
-  int? _idx;
+// 전체 장르 리스트:
+// ['RPG', 'etc', '격투', '기타', '레이싱', '보드', '슈팅', '스포츠', '시뮬레이션', '실용', '아케이드', '액션', '어드벤처', '음악', '전략', '커뮤니케이션', '트레이닝', '파티', '퍼즐', '학습']
+// 전체 언어 리스트:
+// ['네덜란드어', '독일어', '러시아어', '스페인어', '영어', '이태리어', '일본어', '중국어', '포르투갈어', '프랑스어', '한국어']
+
+class SwitchGame {
   String? _title;
-  List<String>? _genre;
-  String? _releaseDate;
-  String? _description;
+  String? _idx;
+  List<String>? _genres;
   List<String>? _languages;
   String? _playerCount;
-  String? _thumbnailUrl;
-  List<String>? _imageUrls;
-  int? _recommended;
-  int? _reviews;
-  int? _score;
-  double? _sentiment;
-  String? _wordcloudUrl;
+  String? _releaseDate;
+  List<String>? _images;
+  SalePeriod? _salePeriod;
   NintendoStore? _nintendoStore;
   Coupang? _coupang;
 
-  Recommendation(
-      {int? idx,
-      String? title,
-      List<String>? genre,
-      String? releaseDate,
-      String? description,
+  SwitchGame(
+      {String? title,
+      String? idx,
+      List<String>? genres,
       List<String>? languages,
       String? playerCount,
-      String? thumbnailUrl,
-      List<String>? imageUrls,
-      int? recommended,
-      int? reviews,
-      int? score,
-      double? sentiment,
-      String? wordcloudUrl,
+      String? releaseDate,
+      List<String>? images,
+      SalePeriod? salePeriod,
       NintendoStore? nintendoStore,
       Coupang? coupang}) {
-    this._idx = idx;
+    assert(idx != null && title != null);
+
     this._title = title;
-    this._genre = genre;
-    this._releaseDate = releaseDate;
-    this._description = description;
+    this._idx = idx;
+    this._genres = genres;
     this._languages = languages;
     this._playerCount = playerCount;
-    this._thumbnailUrl = thumbnailUrl;
-    this._imageUrls = imageUrls;
-    this._recommended = recommended;
-    this._reviews = reviews;
-    this._score = score;
-    this._sentiment = sentiment;
-    this._wordcloudUrl = wordcloudUrl;
+    this._releaseDate = releaseDate;
+    this._images = images;
+    this._salePeriod = salePeriod;
     this._nintendoStore = nintendoStore;
     this._coupang = coupang;
   }
 
-  int? get idx => _idx;
   String? get title => _title;
-  List<String>? get genre => _genre;
-  String? get releaseDate => _releaseDate;
-  String? get description => _description;
+  String? get idx => _idx;
+  List<String>? get genres => _genres;
   List<String>? get languages => _languages;
   String? get playerCount => _playerCount;
-  String? get thumbnailUrl => _thumbnailUrl;
-  List<String>? get imageUrls => _imageUrls;
-  int? get recommended => _recommended;
-  int? get reviews => _reviews;
-  int? get score => _score;
-  double? get sentiment => _sentiment;
-  String? get wordcloudUrl => _wordcloudUrl;
+  String? get releaseDate => _releaseDate;
+  List<String>? get images => _images;
+  SalePeriod? get salePeriod => _salePeriod;
   NintendoStore? get nintendoStore => _nintendoStore;
   Coupang? get coupang => _coupang;
 
-  Recommendation.fromJson(Map<String, dynamic> json) {
-    _idx = json['idx'];
+  SwitchGame.fromJson(Map<String, dynamic> json) {
+    assert(json['idx'] != null && json['title'] != null);
+
     _title = json['title'];
-    _genre = json['genre'].cast<String>();
-    _releaseDate = json['release_date'];
-    _description = json['description'];
-    _languages = json['languages'].cast<String>();
-    _playerCount = json['player_count'];
-    _thumbnailUrl = json['thumbnailUrl'];
-    _imageUrls = json['imageUrls'].cast<String>();
-    _recommended = json['recommended'];
-    _reviews = json['reviews'];
-    _score = json['score'];
-    _sentiment = json['sentiment'];
-    _wordcloudUrl = json['wordcloudUrl'];
+    _idx = json['idx'].toString();
+    _genres = json['genres']?.cast<String>();
+    _languages = json['languages']?.cast<String>();
+    _playerCount = json['playerCount'];
+    _releaseDate = json['releaseDate'];
+    _images = json['images'];
+    _salePeriod = json['salePeriod'] != null
+        ? new SalePeriod.fromJson(json['salePeriod'])
+        : null;
     _nintendoStore = json['nintendoStore'] != null
         ? new NintendoStore.fromJson(json['nintendoStore'])
         : null;
@@ -92,20 +73,14 @@ class Recommendation {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['idx'] = this._idx;
     data['title'] = this._title;
-    data['genre'] = this._genre;
-    data['release_date'] = this._releaseDate;
-    data['description'] = this._description;
+    data['idx'] = this._idx;
+    data['genres'] = this._genres;
     data['languages'] = this._languages;
-    data['player_count'] = this._playerCount;
-    data['thumbnailUrl'] = this._thumbnailUrl;
-    data['imageUrls'] = this._imageUrls;
-    data['recommended'] = this._recommended;
-    data['reviews'] = this._reviews;
-    data['score'] = this._score;
-    data['sentiment'] = this._sentiment;
-    data['wordcloudUrl'] = this._wordcloudUrl;
+    data['playerCount'] = this._playerCount;
+    data['releaseDate'] = this._releaseDate;
+    data['images'] = this._images;
+    data['salePeriod'] = this._salePeriod;
     if (this._nintendoStore != null) {
       data['nintendoStore'] = this._nintendoStore?.toJson();
     }
@@ -118,70 +93,118 @@ class Recommendation {
 
 class NintendoStore {
   String? _url;
-  String? _price;
+  String? _description;
+  int? _price;
   int? _salePrice;
-  int? _salePeriod;
 
-  NintendoStore({String? url, String? price, int? salePrice, int? salePeriod}) {
+  NintendoStore(
+      {String? url, String? description, int? price, int? salePrice}) {
     this._url = url;
+    this._description = description;
     this._price = price;
     this._salePrice = salePrice;
-    this._salePeriod = salePeriod;
   }
 
   String? get url => _url;
-  String? get price => _price;
+  String? get description => _description;
+  int? get price => _price;
   int? get salePrice => _salePrice;
-  int? get salePeriod => _salePeriod;
 
   NintendoStore.fromJson(Map<String, dynamic> json) {
-    _url = json['URL'];
+    _url = json['url'];
+    _description = json['description'];
     _price = json['price'];
-    _salePrice = json['sale_price'];
-    _salePeriod = json['sale_period'];
+    _salePrice = json['salePrice'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['URL'] = this._url;
+    data['url'] = this._url;
+    data['description'] = this._description;
     data['price'] = this._price;
-    data['sale_price'] = this._salePrice;
-    data['sale_period'] = this._salePeriod;
+    data['salePrice'] = this._salePrice;
     return data;
   }
 }
 
 class Coupang {
   String? _url;
-  bool? _partner;
-  String? _price;
-  String? _salePrice;
+  bool? _isPartner;
+  String? _title;
+  int? _rating;
+  int? _ratingCount;
+  int? _price;
+  int? _salePrice;
 
-  Coupang({String? url, bool? partner, String? price, String? salePrice}) {
+  Coupang(
+      {String? url,
+      bool? isPartner,
+      String? title,
+      int? rating,
+      int? ratingCount,
+      int? price,
+      int? salePrice}) {
     this._url = url;
-    this._partner = partner;
+    this._isPartner = isPartner;
+    this._title = title;
+    this._rating = rating;
+    this._ratingCount = ratingCount;
     this._price = price;
     this._salePrice = salePrice;
   }
 
   String? get url => _url;
-  bool? get partner => _partner;
-  String? get price => _price;
-  String? get salePrice => _salePrice;
+  bool? get isPartner => _isPartner;
+  String? get title => _title;
+  int? get rating => _rating;
+  int? get ratingCount => _ratingCount;
+  int? get price => _price;
+  int? get salePrice => _salePrice;
 
   Coupang.fromJson(Map<String, dynamic> json) {
-    _url = json['URL'];
-    _partner = json['partner'];
+    _url = json['url'];
+    _isPartner = json['isPartner'];
+    _title = json['title'];
+    _rating = json['rating'];
+    _ratingCount = json['ratingCount'];
     _price = json['price'];
-    _salePrice = json['sale_price'];
+    _salePrice = json['salePrice'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['URL'] = this._url;
-    data['partner'] = this._partner;
+    data['url'] = this._url;
+    data['isPartner'] = this._isPartner;
+    data['title'] = this._title;
+    data['rating'] = this._rating;
+    data['ratingCount'] = this._ratingCount;
     data['price'] = this._price;
-    data['sale_price'] = this._salePrice;
+    data['salePrice'] = this._salePrice;
+    return data;
+  }
+}
+
+class SalePeriod {
+  String? _start;
+  String? _end;
+
+  SalePeriod({String? start, String? end}) {
+    this._start = start;
+    this._end = end;
+  }
+
+  String? get start => _start;
+  String? get end => _end;
+
+  SalePeriod.fromJson(Map<String, dynamic> json) {
+    _start = json['start'];
+    _end = json['end'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['start'] = this._start;
+    data['end'] = this._end;
     return data;
   }
 }

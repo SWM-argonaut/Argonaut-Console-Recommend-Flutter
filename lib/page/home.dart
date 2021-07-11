@@ -6,6 +6,8 @@ import 'package:argonaut_console_recommend/configs.dart';
 
 import 'package:argonaut_console_recommend/block/api.dart';
 
+import 'package:argonaut_console_recommend/functions/image.dart';
+
 import 'package:argonaut_console_recommend/data_class/search.dart';
 import 'package:argonaut_console_recommend/data_class/api.dart';
 
@@ -15,7 +17,7 @@ import 'package:argonaut_console_recommend/page/notification/notification_list.d
 SearchOptionsNotifier searchOptionsNoti =
     SearchOptionsNotifier(SearchOptions());
 
-late Future<List<Recommendation>> recommendedList;
+late Future<List<SwitchGame>> switchGameList;
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -28,7 +30,7 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    recommendedList = getRecommendList(searchOptionsNoti.value);
+    switchGameList = getSwitchGameList(searchOptionsNoti.value);
   }
 
   int _selectedIndex = 0;
@@ -191,9 +193,9 @@ ListView _orderListBuilder(BuildContext context, SearchOptions options, _) {
 
 _buildList() {
   return FutureBuilder(
-      future: recommendedList,
+      future: switchGameList,
       builder:
-          (BuildContext context, AsyncSnapshot<List<Recommendation>> snapshot) {
+          (BuildContext context, AsyncSnapshot<List<SwitchGame>> snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
           return CircularProgressIndicator();
         } else {
@@ -217,18 +219,18 @@ _buildList() {
       });
 }
 
-Card _buildCard(BuildContext context, Recommendation? item) {
+Card _buildCard(BuildContext context, SwitchGame? item) {
   return Card(
     elevation: 8.0,
     margin: new EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
     child: Container(
-      decoration: BoxDecoration(color: Color.fromRGBO(64, 75, 96, .9)),
+      decoration: BoxDecoration(color: Color.fromRGBO(255, 255, 255, 1)),
       child: _buildListTile(context, item),
     ),
   );
 }
 
-ListTile _buildListTile(BuildContext context, Recommendation? item) {
+ListTile _buildListTile(BuildContext context, SwitchGame? item) {
   const Color _progressIndicatorColor = Color.fromRGBO(209, 224, 224, 0.2);
   const Color _progressIndicatorValueColor = Colors.green;
 
@@ -236,12 +238,11 @@ ListTile _buildListTile(BuildContext context, Recommendation? item) {
     contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
     leading: Container(
         padding: EdgeInsets.only(right: 12.0),
+        width: 120,
         decoration: new BoxDecoration(
             border: new Border(
                 right: new BorderSide(width: 1.0, color: Colors.white24))),
-        child: item?.thumbnailUrl != ""
-            ? Image.network("${item?.thumbnailUrl}")
-            : Icon(Icons.autorenew, color: Colors.white)),
+        child: getThumbnail(item)),
     title: Text(
       "${item?.title}",
       style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
@@ -253,7 +254,7 @@ ListTile _buildListTile(BuildContext context, Recommendation? item) {
             child: Container(
               child: LinearProgressIndicator(
                 backgroundColor: _progressIndicatorColor,
-                value: item?.sentiment,
+                value: (item?.coupang?.rating ?? 0).toDouble() / 100,
                 valueColor:
                     AlwaysStoppedAnimation(_progressIndicatorValueColor),
               ),
@@ -272,7 +273,7 @@ ListTile _buildListTile(BuildContext context, Recommendation? item) {
       Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => DetailPage(recommendation: item)));
+              builder: (context) => DetailPage(switchGame: item)));
     },
   );
 }

@@ -8,27 +8,29 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 import 'package:argonaut_console_recommend/data_class/api.dart';
+import 'package:argonaut_console_recommend/functions/image.dart';
 
 void _launchURL(String _url) async =>
     await canLaunch(_url) ? await launch(_url) : throw 'Could not launch $_url';
 
 class DetailPage extends StatelessWidget {
-  final Recommendation? recommendation;
-  DetailPage({Key? key, required this.recommendation}) : super(key: key);
+  final SwitchGame? switchGame;
+  DetailPage({Key? key, required this.switchGame}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("${recommendation?.title}"),
+        title: Text("${switchGame?.title}"),
         centerTitle: true,
       ),
       body: LayoutBuilder(builder: (BuildContext context, constraints) {
         return SingleChildScrollView(
             child: Column(
           children: <Widget>[
-            _photos(context, recommendation, constraints),
-            _bottomContent(context, recommendation)
+            _photos(context, switchGame, constraints),
+            _content(context, switchGame),
+            _bottomContent()
           ],
         ));
       }),
@@ -36,39 +38,19 @@ class DetailPage extends StatelessWidget {
   }
 }
 
-Container _photos(BuildContext context, Recommendation? recommendation,
-    BoxConstraints constraints) {
+Container _photos(
+    BuildContext context, SwitchGame? switchGame, BoxConstraints constraints) {
   return Container(
-      height: constraints.maxHeight / 3,
-      child: ExtendedImageGesturePageView.builder(
-        itemBuilder: (BuildContext context, int index) {
-          String _url = "${recommendation?.imageUrls?[index]}";
-          Widget image = ExtendedImage.network(
-            _url,
-            cache: true,
-            fit: BoxFit.contain,
-            mode: ExtendedImageMode.gesture,
-          );
-          return Container(
-            child: image,
-            padding: EdgeInsets.all(5.0),
-          );
-        },
-        itemCount: recommendation?.imageUrls?.length,
-        controller: PageController(
-          initialPage: 0,
-        ),
-        scrollDirection: Axis.horizontal,
-      ));
+      height: constraints.maxHeight / 3, child: imagePageView(switchGame));
 }
 
-Container _bottomContent(BuildContext context, Recommendation? recommendation) {
+Container _content(BuildContext context, SwitchGame? switchGame) {
   return Container(
     padding: EdgeInsets.all(10.0),
     child: Column(
       children: <Widget>[
         RatingBarIndicator(
-          rating: (recommendation?.score ?? 0).toDouble(),
+          rating: (switchGame?.coupang?.rating ?? 0).toDouble() / 20,
           itemBuilder: (context, index) => Icon(
             Icons.star,
             color: Colors.amber,
@@ -79,23 +61,19 @@ Container _bottomContent(BuildContext context, Recommendation? recommendation) {
         ),
         ExpandablePanel(
           header: Text(
-            "description",
-            style: TextStyle(color: Colors.black),
+            "상세 설명",
+            style: TextStyle(
+              color: Colors.black,
+            ),
           ),
-          collapsed: Text(
-            "${recommendation?.description}",
-            softWrap: true,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(color: Colors.black),
-          ),
-          expanded: Text("${recommendation?.description}",
+          collapsed: Container(),
+          expanded: Text("${switchGame?.nintendoStore?.description}",
               softWrap: true, style: TextStyle(color: Colors.black)),
         ),
         Padding(
             padding: EdgeInsets.symmetric(vertical: 16.0),
             child: ElevatedButton(
-              onPressed: () => _launchURL("${recommendation?.coupang?.url}"),
+              onPressed: () => _launchURL("${switchGame?.coupang?.url}"),
               style: ElevatedButton.styleFrom(
                   primary: Color.fromRGBO(58, 66, 86, 1.0)),
               child: Text("쿠팡에서 구매", style: TextStyle(color: Colors.white)),
@@ -103,8 +81,7 @@ Container _bottomContent(BuildContext context, Recommendation? recommendation) {
         Padding(
             padding: EdgeInsets.symmetric(vertical: 16.0),
             child: ElevatedButton(
-              onPressed: () =>
-                  _launchURL("${recommendation?.nintendoStore?.url}"),
+              onPressed: () => _launchURL("${switchGame?.nintendoStore?.url}"),
               style: ElevatedButton.styleFrom(
                   primary: Color.fromRGBO(58, 66, 86, 1.0)),
               child:
@@ -113,4 +90,10 @@ Container _bottomContent(BuildContext context, Recommendation? recommendation) {
       ],
     ),
   );
+}
+
+Widget _bottomContent() {
+  return Container(
+      alignment: Alignment.bottomCenter,
+      child: Text("이 앱은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다."));
 }
