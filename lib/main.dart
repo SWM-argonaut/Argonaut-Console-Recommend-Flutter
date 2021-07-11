@@ -38,12 +38,10 @@ class _MyAppState extends State<MyApp> {
       navigatorKey: _navigatorKey,
       title: '닌텐도 스위치 게임 추천',
       theme: new ThemeData(
-          primaryColor: Color.fromRGBO(58, 66, 86, 1.0),
-          accentColor: Color.fromRGBO(58, 66, 86, 1.0),
-          bottomAppBarColor: Color.fromRGBO(58, 66, 86, 1.0),
-          backgroundColor: Color.fromRGBO(58, 66, 86, 1.0),
-          cardColor: Color.fromRGBO(58, 66, 86, 1.0),
-          canvasColor: Color.fromRGBO(58, 66, 86, 1.0)),
+          scaffoldBackgroundColor: Colors.lime[50],
+          bottomNavigationBarTheme: BottomNavigationBarThemeData(
+              selectedItemColor: Colors.white,
+              unselectedItemColor: Colors.black)),
       home: new Home(),
       // routes: {},
     );

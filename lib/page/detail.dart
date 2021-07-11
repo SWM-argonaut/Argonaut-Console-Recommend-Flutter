@@ -80,17 +80,17 @@ Container _bottomContent(BuildContext context, Recommendation? recommendation) {
         ExpandablePanel(
           header: Text(
             "description",
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(color: Colors.black),
           ),
           collapsed: Text(
             "${recommendation?.description}",
             softWrap: true,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(color: Colors.black),
           ),
           expanded: Text("${recommendation?.description}",
-              softWrap: true, style: TextStyle(color: Colors.white)),
+              softWrap: true, style: TextStyle(color: Colors.black)),
         ),
         Padding(
             padding: EdgeInsets.symmetric(vertical: 16.0),

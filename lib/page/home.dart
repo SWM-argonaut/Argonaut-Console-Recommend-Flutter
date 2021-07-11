@@ -2,6 +2,8 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 
+import 'package:argonaut_console_recommend/configs.dart';
+
 import 'package:argonaut_console_recommend/block/api.dart';
 
 import 'package:argonaut_console_recommend/data_class/search.dart';
@@ -31,10 +33,16 @@ class _HomeState extends State<Home> {
 
   int _selectedIndex = 0;
   static List<Text> _titles = [
-    Text("닌텐도 스위치 게임 추천"),
-    Text("알림"),
-    Text("북마크"),
-    Text("설정"),
+    Text("닌텐도 스위치 게임 추천", style: TextStyle(color: Colors.white)),
+    Text("알림", style: TextStyle(color: Colors.white)),
+    Text("북마크", style: TextStyle(color: Colors.white)),
+    Text("설정", style: TextStyle(color: Colors.white)),
+  ];
+  static List<Color> _appBarColor = [
+    Color.fromRGBO(1, 177, 209, 1),
+    notificationColor,
+    favoriteColor,
+    settingColor,
   ];
   static List<Widget> _tabs = <Widget>[
     _home(),
@@ -58,42 +66,32 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0.1,
+        backgroundColor: _appBarColor.elementAt(_selectedIndex),
         title: _titles.elementAt(_selectedIndex),
         // centerTitle: true,
       ),
       body: _tabs.elementAt(_selectedIndex),
-      bottomNavigationBar: BottomAppBar(
-        child: BottomNavigationBar(
-          currentIndex: _selectedIndex,
-          selectedItemColor: Colors.amber[800],
-          onTap: (index) => setState(() => _selectedIndex = index),
-          items: [
-            BottomNavigationBarItem(
-                icon: Icon(
-                  Icons.home,
-                  color: Colors.white,
-                ),
-                label: "home"),
-            BottomNavigationBarItem(
-                icon: Icon(
-                  Icons.notifications,
-                  color: Colors.white,
-                ),
-                label: "home"),
-            BottomNavigationBarItem(
-                icon: Icon(
-                  Icons.favorite,
-                  color: Colors.white,
-                ),
-                label: "home"),
-            BottomNavigationBarItem(
-                icon: Icon(
-                  Icons.settings,
-                  color: Colors.white,
-                ),
-                label: "home"),
-          ],
-        ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: (index) => setState(() => _selectedIndex = index),
+        items: [
+          BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: "home",
+              backgroundColor: Color.fromRGBO(254, 96, 84, 1)),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.notifications),
+              label: "notifications",
+              backgroundColor: notificationColor),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.favorite),
+              label: "favorite",
+              backgroundColor: favoriteColor),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.settings),
+              label: "settings",
+              backgroundColor: settingColor),
+        ],
       ),
     );
   }
@@ -127,6 +125,7 @@ Row _options(BuildContext context, double _height, double _width) {
         height: _height,
         width: _iconWidth,
         alignment: Alignment.center,
+        color: Colors.transparent,
         child: ElevatedButton(
           child: Icon(Icons.arrow_drop_down_circle_outlined),
           style: ElevatedButton.styleFrom(primary: Colors.transparent),

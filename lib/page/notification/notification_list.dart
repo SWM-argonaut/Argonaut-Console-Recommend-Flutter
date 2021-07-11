@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 
 import 'package:localstorage/localstorage.dart';
 
+import 'package:argonaut_console_recommend/configs.dart' show notificationColor;
+
 import 'package:argonaut_console_recommend/data_class/notificationItem.dart';
 import 'package:argonaut_console_recommend/page/notification/notification_detail.dart';
 
@@ -37,7 +39,7 @@ class _PushListState extends State<PushList> {
                 itemCount: _items.length,
                 scrollDirection: Axis.vertical,
                 itemBuilder: (BuildContext context, int index) {
-                  return _itemBuilder(context, _items[index], index);
+                  return _buildCard(context, _items[index], index);
                 });
           }
 
@@ -48,12 +50,31 @@ class _PushListState extends State<PushList> {
   }
 }
 
-Container _itemBuilder(BuildContext context, NotificationItem item, int index) {
-  return Container(
-      child: ElevatedButton(
-          onPressed: () => Navigator.push(context,
-              MaterialPageRoute(builder: (context) => PushDetail(item: item))),
-          child: Column(
-            children: [Text("${item.title}"), Text("${item.body}")],
-          )));
+Card _buildCard(BuildContext context, NotificationItem item, int index) {
+  return Card(
+    elevation: 8.0,
+    margin: new EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+    child: Container(
+      decoration: BoxDecoration(color: Color.fromRGBO(64, 75, 96, .9)),
+      child: _buildListTile(context, item),
+    ),
+  );
+}
+
+ListTile _buildListTile(BuildContext context, NotificationItem item) {
+  return ListTile(
+    contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+    title: Text(
+      "${item.title}",
+      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+    ),
+    subtitle: Padding(
+        padding: EdgeInsets.only(left: 10.0),
+        child: Text("${item.body}", style: TextStyle(color: Colors.white))),
+    trailing: Icon(Icons.keyboard_arrow_right, color: Colors.white, size: 30.0),
+    onTap: () {
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => PushDetail(item: item)));
+    },
+  );
 }
