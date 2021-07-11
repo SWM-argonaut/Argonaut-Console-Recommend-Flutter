@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 
 import 'package:expandable/expandable.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:extended_image/extended_image.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 import 'package:argonaut_console_recommend/data_class/api.dart';
@@ -45,6 +44,9 @@ Container _photos(
 }
 
 Container _content(BuildContext context, SwitchGame? switchGame) {
+  const Color _ratingBackgroundColor = Colors.grey;
+  const Color _ratingValueColor = Colors.amber;
+
   return Container(
     padding: EdgeInsets.all(10.0),
     child: Column(
@@ -53,19 +55,20 @@ Container _content(BuildContext context, SwitchGame? switchGame) {
           rating: (switchGame?.coupang?.rating ?? 0).toDouble() / 20,
           itemBuilder: (context, index) => Icon(
             Icons.star,
-            color: Colors.amber,
+            color: _ratingValueColor,
           ),
           itemCount: 5,
           itemSize: 50.0,
+          unratedColor: _ratingBackgroundColor,
           direction: Axis.horizontal,
         ),
         ExpandablePanel(
-          header: Text(
-            "상세 설명",
-            style: TextStyle(
-              color: Colors.black,
-            ),
-          ),
+          header: Padding(
+              padding: EdgeInsets.all(12),
+              child: Text(
+                "상세 설명",
+                style: TextStyle(color: Colors.black, fontSize: 15),
+              )),
           collapsed: Container(),
           expanded: Text("${switchGame?.nintendoStore?.description}",
               softWrap: true, style: TextStyle(color: Colors.black)),
