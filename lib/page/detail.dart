@@ -1,4 +1,4 @@
-// TODO 데이터 구조 확정 짓고서 여기 마무리 하는게 좋을듯
+// TODO 조르기 기능 추가 (카톡으로 구매 링크 보내기)
 
 import 'package:flutter/material.dart';
 

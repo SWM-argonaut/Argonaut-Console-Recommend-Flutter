@@ -1,7 +1,9 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:keyboard_utils/keyboard_options.dart';
 
+import 'package:keyboard_utils/widgets.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 import 'package:argonaut_console_recommend/configs.dart';
@@ -43,6 +45,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         elevation: 0.1,
         backgroundColor: topColor,
@@ -74,54 +77,63 @@ class _HomeState extends State<Home> {
 LayoutBuilder _home() {
   return LayoutBuilder(builder: (BuildContext context, constraints) {
     const double _optionHeight = 50;
-    const double _searchBarHeight = 50;
+    const double _searchBarHeight = 60;
 
     double _height = constraints.maxHeight;
     double _width = constraints.maxWidth;
 
-    return Column(children: [
-      _options(context, _optionHeight, _width),
-      Container(
-          height: _height - _optionHeight - _searchBarHeight,
-          child: _buildList()),
-      _searchBar(context, _searchBarHeight),
-    ]);
+    return Container(
+        height: _height,
+        width: _width,
+        child: Stack(clipBehavior: Clip.none, children: [
+          Column(children: [
+            _options(context, _optionHeight, _width),
+            Container(height: _height - _optionHeight, child: _buildList()),
+          ]),
+          _searchBar(context, _searchBarHeight, _width),
+        ]));
   });
 }
 
-Widget _searchBar(BuildContext context, double _height) {
-  return Container(
-    height: _height,
-    color: bottomColor,
-    child: Padding(
-      padding: const EdgeInsets.only(left: 8.0),
-      child: TextField(
-        maxLines: 3,
-        controller: textController,
-        style: TextStyle(color: Colors.white),
-        decoration: InputDecoration(
-            suffixIcon: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                IconButton(
-                  icon: Icon(
-                    Icons.search,
-                    color: Colors.white,
+Widget _searchBar(BuildContext context, double _height, double _width) {
+  return KeyboardAware(
+      builder: (BuildContext context, KeyboardOptions keyboard) {
+    return Positioned(
+        bottom: keyboard.keyboardHeight,
+        child: Container(
+          height: _height,
+          width: _width,
+          color: bottomColor,
+          child: Padding(
+            padding: const EdgeInsets.only(left: 15.0),
+            child: TextField(
+              maxLines: 1,
+              controller: textController,
+              style: TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                  suffixIcon: Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      IconButton(
+                        icon: Icon(
+                          Icons.search,
+                          color: Colors.white,
+                        ),
+                        onPressed: () {
+                          FocusScope.of(context).requestFocus(FocusNode());
+                        },
+                      ),
+                    ],
                   ),
-                  onPressed: () {
-                    FocusScope.of(context).requestFocus(FocusNode());
-                  },
-                ),
-              ],
+                  border: InputBorder.none,
+                  hintText: "타이틀을 검색해주세요",
+                  hintStyle: TextStyle(color: Colors.white)),
             ),
-            border: InputBorder.none,
-            hintText: "타이틀을 검색해주세요",
-            hintStyle: TextStyle(color: Colors.white)),
-      ),
-    ),
-  );
+          ),
+        ));
+  });
 }
 
 Container _options(BuildContext context, double _height, double _width) {

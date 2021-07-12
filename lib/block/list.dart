@@ -17,6 +17,8 @@ import 'package:argonaut_console_recommend/data_class/api.dart';
 class SwitchGameListBloc {
   static SearchOptions _searchOptions = SearchOptions();
 
+  bool _init = false;
+
   int _updateCount = 0;
   final StreamController<int> update = StreamController<int>.broadcast();
 
@@ -52,9 +54,14 @@ class SwitchGameListBloc {
 
   // 처음 리스트 초기화
   Future<bool> initGameList() async {
+    if (_init) {
+      return true;
+    }
+
     _switchGameList = await getSwitchGameList();
     _switchGameFilteredList = List<SwitchGame>.from(_switchGameList);
 
+    _init = true;
     return true;
   }
 
