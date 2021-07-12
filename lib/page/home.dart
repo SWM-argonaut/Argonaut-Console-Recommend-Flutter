@@ -7,6 +7,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:argonaut_console_recommend/configs.dart';
 
 import 'package:argonaut_console_recommend/block/api.dart';
+import 'package:argonaut_console_recommend/block/list.dart';
 
 import 'package:argonaut_console_recommend/functions/image.dart';
 
@@ -16,11 +17,8 @@ import 'package:argonaut_console_recommend/data_class/api.dart';
 import 'package:argonaut_console_recommend/page/detail.dart';
 import 'package:argonaut_console_recommend/page/notification/notification_list.dart';
 
-SearchOptionsNotifier searchOptionsNoti =
-    SearchOptionsNotifier(SearchOptions());
-
-late Future<List<SwitchGame>> switchGameList;
 late TextEditingController textController;
+final SwitchGameListBloc switchGameListBloc = SwitchGameListBloc();
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -33,8 +31,7 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    textController = new TextEditingController();
-    switchGameList = getSwitchGameList(searchOptionsNoti.value);
+    textController = switchGameListBloc.textController();
   }
 
   @override
@@ -128,15 +125,14 @@ Widget _searchBar(BuildContext context, double _height) {
 }
 
 Container _options(BuildContext context, double _height, double _width) {
-  const double _iconWidth = 60;
-
   return Container(
       child: Row(children: [
     Container(
       height: _height,
       width: _width,
       child: ValueListenableBuilder(
-          valueListenable: searchOptionsNoti, builder: _orderListBuilder),
+          valueListenable: switchGameListBloc.switchGameOrderNoti,
+          builder: _orderListBuilder),
     ),
   ]));
 }
@@ -181,7 +177,8 @@ ListView _orderListBuilder(BuildContext context, SearchOptions options, _) {
       return Padding(
           padding: EdgeInsets.all(3),
           child: ElevatedButton(
-            onPressed: () => searchOptionsNoti.clicked(_order),
+            onPressed: () =>
+                switchGameListBloc.switchGameOrderNoti.clicked(_order),
             child: _child,
             style:
                 ElevatedButton.styleFrom(primary: _butttonColor, elevation: 10),
@@ -192,9 +189,8 @@ ListView _orderListBuilder(BuildContext context, SearchOptions options, _) {
 
 _buildList() {
   return FutureBuilder(
-      future: switchGameList,
-      builder:
-          (BuildContext context, AsyncSnapshot<List<SwitchGame>> snapshot) {
+      future: switchGameListBloc.initGameList(),
+      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
           return Center(child: CircularProgressIndicator());
         } else {
@@ -203,17 +199,24 @@ _buildList() {
             return Center(child: Text("Something went wrong..."));
           }
 
-          if (snapshot.data?.length == 0) {
+          if (switchGameListBloc.itemCount == 0) {
             return Center(child: Text("서버와 통신이 되지 않습니다."));
           }
-          return ListView.builder(
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            itemCount: snapshot.data?.length,
-            itemBuilder: (BuildContext context, int index) {
-              return _buildCard(context, snapshot.data?[index]);
-            },
-          );
+
+          // TODO;
+          return StreamBuilder(
+              stream: switchGameListBloc.update.stream,
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                return ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  itemCount: switchGameListBloc.filteredItemCount,
+                  itemBuilder: (BuildContext context, int index) {
+                    return _buildCard(
+                        context, switchGameListBloc.filteredItems[index]);
+                  },
+                );
+              });
         }
       });
 }

@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
 
-enum Genre { AOS, RACING, RPG }
+import 'package:argonaut_console_recommend/data_class/api.dart';
+
+// 전체 장르 리스트:
+// ['RPG', 'etc', '격투', '기타', '레이싱', '보드', '슈팅', '스포츠', '시뮬레이션', '실용', '아케이드', '액션', '어드벤처', '음악', '전략', '커뮤니케이션', '트레이닝', '파티', '퍼즐', '학습']
+// 전체 언어 리스트:
+// ['네덜란드어', '독일어', '러시아어', '스페인어', '영어', '이태리어', '일본어', '중국어', '포르투갈어', '프랑스어', '한국어']
+
+enum Genre { AOS }
+enum Language { KOR }
 enum OrderBy {
-  RECOMMENDED, // 추천순
   REVIEWS, //리뷰 수
   PUBLISHEDDATE, //발매 순
   FULLPRICE, // 정가
@@ -11,27 +18,58 @@ enum OrderBy {
 }
 
 class SearchOptions {
-  final Set<Genre> genres = Set<Genre>(); // 장르들
+  final Set<Genre> _genres = Set<Genre>(); // 장르들
+  final Set<Language> _languages = Set<Language>(); // 장르들
 
-  bool asc = true; // ASC, DESC
-  OrderBy orderBy = OrderBy.RECOMMENDED;
+  String searchText = "";
+  bool _asc = true; // ASC, DESC
+  OrderBy _orderBy = OrderBy.PUBLISHEDDATE;
 
-  void addGenre(Genre genre) => genres.add(genre);
-  void removeGenre(Genre genre) => genres.remove(genre);
-  void clearGenre() => genres.clear();
+  get asc => _asc;
+  get orderBy => _orderBy;
+  get genres => _genres;
+  get languages => _languages;
+
+  void addGenre(Genre genre) => _genres.add(genre);
+  void removeGenre(Genre genre) => _genres.remove(genre);
+  void clearGenre() => _genres.clear();
+
+  void addLanguage(Language language) => _languages.add(language);
+  void removeLanguage(Language language) => _languages.remove(language);
+  void clearLanguage() => _languages.clear();
 
   void clicked(OrderBy item) {
-    if (item == orderBy) {
+    if (item == _orderBy) {
       // if selected already, change just order
-      asc = !asc;
+      _asc = !_asc;
     } else {
-      orderBy = item;
+      _orderBy = item;
     }
+  }
+
+  bool checkItem(SwitchGame? item) {
+    // TODO 태그랑 언어
+    if (item!.title!.contains(searchText) == false) {
+      return false;
+    }
+
+    return true;
   }
 }
 
-class SearchOptionsNotifier extends ValueNotifier<SearchOptions> {
-  SearchOptionsNotifier(SearchOptions value) : super(value);
+// 정렬만
+class ItemOrderNotifier extends ValueNotifier<SearchOptions> {
+  ItemOrderNotifier(SearchOptions value) : super(value);
+
+  void clicked(OrderBy item) {
+    value.clicked(item);
+    notifyListeners();
+  }
+}
+
+// 장르
+class GenreOptionNotifier extends ValueNotifier<SearchOptions> {
+  GenreOptionNotifier(SearchOptions value) : super(value);
 
   void addGenre(Genre genre) {
     value.addGenre(genre);
@@ -47,9 +85,23 @@ class SearchOptionsNotifier extends ValueNotifier<SearchOptions> {
     value.clearGenre();
     notifyListeners();
   }
+}
 
-  void clicked(OrderBy item) {
-    value.clicked(item);
+class LanguageOptionNotifier extends ValueNotifier<SearchOptions> {
+  LanguageOptionNotifier(SearchOptions value) : super(value);
+
+  void addLanguage(Language language) {
+    value.addLanguage(language);
+    notifyListeners();
+  }
+
+  void removeLanguage(Language language) {
+    value.removeLanguage(language);
+    notifyListeners();
+  }
+
+  void clearLanguage(Language language) {
+    value.clearLanguage();
     notifyListeners();
   }
 }
