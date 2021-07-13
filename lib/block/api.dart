@@ -6,7 +6,6 @@ import 'package:http/http.dart' as http;
 import 'package:argonaut_console_recommend/configs.dart' show requestURL;
 
 import 'package:argonaut_console_recommend/data_class/api.dart';
-import 'package:argonaut_console_recommend/data_class/search.dart';
 
 Future<List<SwitchGame>> getSwitchGameList() async {
   var url = Uri.parse(requestURL);

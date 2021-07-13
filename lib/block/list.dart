@@ -9,7 +9,8 @@ import 'package:argonaut_console_recommend/configs.dart';
 
 import 'package:argonaut_console_recommend/block/api.dart';
 
-import 'package:argonaut_console_recommend/functions/image.dart';
+import 'package:argonaut_console_recommend/functions/sort.dart';
+import 'package:argonaut_console_recommend/functions/text.dart';
 
 import 'package:argonaut_console_recommend/data_class/search.dart';
 import 'package:argonaut_console_recommend/data_class/api.dart';
@@ -22,6 +23,7 @@ class SwitchGameListBloc {
   int _updateCount = 0;
   final StreamController<int> update = StreamController<int>.broadcast();
 
+  // TODO: 이것들 없애고 블럭 내에서 처리하도록 바꿔야 될듯.
   // 위에 아이템 눌렸을때 색깔 같은거 바꾸는데 사용
   final ItemOrderNotifier switchGameOrderNoti =
       ItemOrderNotifier(_searchOptions);
@@ -46,6 +48,7 @@ class SwitchGameListBloc {
     // add listener
     _textController.addListener(() {
       _searchOptions.searchText = _textController.text;
+      _searchOptions.searchTextLowerCase = textForSearch(_textController.text);
       switchGameFilter();
     });
 
@@ -54,10 +57,6 @@ class SwitchGameListBloc {
 
   // 처음 리스트 초기화
   Future<bool> initGameList() async {
-    if (_init) {
-      return true;
-    }
-
     _switchGameList = await getSwitchGameList();
     _switchGameFilteredList = List<SwitchGame>.from(_switchGameList);
 
@@ -84,45 +83,20 @@ class SwitchGameListBloc {
     // 정보가 없는건 최하단으로
     switch (_searchOptions.orderBy) {
       case OrderBy.REVIEWS:
-        _switchGameFilteredList.sort((a, b) {
-          if (a.coupang == null) {
-            return 1;
-          } else if (a.coupang!.ratingCount == null) {
-            return 1;
-          } else if (b.coupang == null) {
-            return -1;
-          } else
-            return (a.coupang!.ratingCount!
-                    .compareTo(b.coupang!.ratingCount ?? 0)) *
-                (_searchOptions.asc ? 1 : -1);
-        });
+        _switchGameFilteredList
+            .sort((a, b) => orderByReviews(a, b, _searchOptions.asc));
         break;
       case OrderBy.RELEASEDATE:
-        _switchGameFilteredList.sort((a, b) {
-          if (a.releaseDate == null) {
-            return 1;
-          } else if (b.releaseDate == null) {
-            return -1;
-          } else
-            return (a.releaseDate!.compareTo(b.releaseDate!)) *
-                (_searchOptions.asc ? 1 : -1);
-        });
+        _switchGameFilteredList
+            .sort((a, b) => orderByReleasedate(a, b, _searchOptions.asc));
         break;
       case OrderBy.PRICE:
-        _switchGameFilteredList.sort((a, b) {
-          if (a.nintendoStore == null) {
-            return 1;
-          } else if (a.nintendoStore!.price == null) {
-            return 1;
-          } else if (b.nintendoStore == null) {
-            return -1;
-          } else
-            return (a.nintendoStore!.price!
-                    .compareTo(b.nintendoStore!.price ?? 0)) *
-                (_searchOptions.asc ? 1 : -1);
-        });
+        _switchGameFilteredList
+            .sort((a, b) => orderByPrice(a, b, _searchOptions.asc));
         break;
       case OrderBy.SCORE:
+        _switchGameFilteredList
+            .sort((a, b) => orderByScore(a, b, _searchOptions.asc));
         break;
       default:
         log("order not founded : ${_searchOptions.orderBy}");

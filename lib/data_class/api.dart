@@ -1,7 +1,10 @@
+import 'package:argonaut_console_recommend/functions/text.dart';
+
 // TODO 할인률 넣으면 좋을듯
 
 class SwitchGame {
   String? _title;
+  String? _titleForSearch;
   String? _idx;
   List<String>? _genres;
   List<String>? _languages;
@@ -26,6 +29,7 @@ class SwitchGame {
     assert(idx != null && title != null);
 
     this._title = title;
+    this._titleForSearch = textForSearch(title!);
     this._idx = idx;
     this._genres = genres;
     this._languages = languages;
@@ -38,6 +42,7 @@ class SwitchGame {
   }
 
   String? get title => _title;
+  String? get titleForSearch => _titleForSearch;
   String? get idx => _idx;
   List<String>? get genres => _genres;
   List<String>? get languages => _languages;
@@ -52,6 +57,7 @@ class SwitchGame {
     assert(json['idx'] != null && json['title'] != null);
 
     _title = json['title'];
+    _titleForSearch = textForSearch(_title!);
     _idx = json['idx'].toString();
     _genres = json['genres']?.cast<String>();
     _languages = json['languages']?.cast<String>();

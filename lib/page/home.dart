@@ -21,6 +21,7 @@ import 'package:argonaut_console_recommend/page/notification/notification_list.d
 
 late TextEditingController textController;
 final SwitchGameListBloc switchGameListBloc = SwitchGameListBloc();
+late Future<bool> _switchGameListInit;
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -33,6 +34,7 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
+    _switchGameListInit = switchGameListBloc.initGameList();
     textController = switchGameListBloc.textController();
   }
 
@@ -203,7 +205,7 @@ Center _orderListBuilder(BuildContext context, SearchOptions options, _) {
 
 _buildList() {
   return FutureBuilder(
-      future: switchGameListBloc.initGameList(),
+      future: _switchGameListInit,
       builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
           return Center(child: CircularProgressIndicator());
@@ -213,11 +215,14 @@ _buildList() {
             return Center(child: Text("Something went wrong..."));
           }
 
+          if (snapshot.data! == false) {
+            return Center(child: CircularProgressIndicator());
+          }
+
           if (switchGameListBloc.itemCount == 0) {
             return Center(child: Text("서버와 통신이 되지 않습니다."));
           }
 
-          // TODO;
           return StreamBuilder(
               stream: switchGameListBloc.update.stream,
               builder: (BuildContext context, AsyncSnapshot snapshot) {

@@ -24,6 +24,7 @@ class SearchOptions {
   final Set<Language> _languages = Set<Language>(); // 장르들
 
   String searchText = "";
+  String searchTextLowerCase = "";
   bool _asc = false; // ASC, DESC
   OrderBy _orderBy = OrderBy.RELEASEDATE;
 
@@ -51,7 +52,7 @@ class SearchOptions {
 
   bool checkItem(SwitchGame? item) {
     // TODO 태그랑 언어
-    if (item!.title!.contains(searchText) == false) {
+    if (item!.titleForSearch!.contains(searchTextLowerCase) == false) {
       return false;
     }
 
