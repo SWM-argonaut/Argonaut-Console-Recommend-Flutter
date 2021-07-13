@@ -164,8 +164,9 @@ AlertDialog _optionDetailBuilder(BuildContext context) {
   );
 }
 
-ListView _orderListBuilder(BuildContext context, SearchOptions options, _) {
-  return ListView.builder(
+Center _orderListBuilder(BuildContext context, SearchOptions options, _) {
+  return Center(
+      child: ListView.builder(
     shrinkWrap: true,
     itemCount: OrderBy.values.length,
     scrollDirection: Axis.horizontal,
@@ -177,26 +178,27 @@ ListView _orderListBuilder(BuildContext context, SearchOptions options, _) {
         _butttonColor = Colors.green;
         _child = Row(
           children: [
-            Text("${OrderBy.values[index]}".split(".").last + " "),
+            Text("${orderByName[index]}".split(".").last + " "),
             Icon(options.asc ? Icons.arrow_upward : Icons.arrow_downward)
           ],
         );
       } else {
         _butttonColor = Colors.orange;
-        _child = Text("${OrderBy.values[index]}".split(".").last);
+        _child = Text("${orderByName[index]}".split(".").last);
       }
-
       return Padding(
           padding: EdgeInsets.all(3),
           child: ElevatedButton(
-            onPressed: () =>
-                switchGameListBloc.switchGameOrderNoti.clicked(_order),
+            onPressed: () {
+              switchGameListBloc.switchGameOrderNoti.clicked(_order);
+              switchGameListBloc.switchGameSortByOrder();
+            },
             child: _child,
             style:
                 ElevatedButton.styleFrom(primary: _butttonColor, elevation: 10),
           ));
     },
-  );
+  ));
 }
 
 _buildList() {

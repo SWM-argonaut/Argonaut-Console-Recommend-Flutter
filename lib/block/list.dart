@@ -79,8 +79,56 @@ class SwitchGameListBloc {
 
   // 정렬
   void switchGameSortByOrder() {
-    // TODO
+    log(_searchOptions.asc.toString());
 
+    // 정보가 없는건 최하단으로
+    switch (_searchOptions.orderBy) {
+      case OrderBy.REVIEWS:
+        _switchGameFilteredList.sort((a, b) {
+          if (a.coupang == null) {
+            return 1;
+          } else if (a.coupang!.ratingCount == null) {
+            return 1;
+          } else if (b.coupang == null) {
+            return -1;
+          } else
+            return (a.coupang!.ratingCount!
+                    .compareTo(b.coupang!.ratingCount ?? 0)) *
+                (_searchOptions.asc ? 1 : -1);
+        });
+        break;
+      case OrderBy.RELEASEDATE:
+        _switchGameFilteredList.sort((a, b) {
+          if (a.releaseDate == null) {
+            return 1;
+          } else if (b.releaseDate == null) {
+            return -1;
+          } else
+            return (a.releaseDate!.compareTo(b.releaseDate!)) *
+                (_searchOptions.asc ? 1 : -1);
+        });
+        break;
+      case OrderBy.PRICE:
+        _switchGameFilteredList.sort((a, b) {
+          if (a.nintendoStore == null) {
+            return 1;
+          } else if (a.nintendoStore!.price == null) {
+            return 1;
+          } else if (b.nintendoStore == null) {
+            return -1;
+          } else
+            return (a.nintendoStore!.price!
+                    .compareTo(b.nintendoStore!.price ?? 0)) *
+                (_searchOptions.asc ? 1 : -1);
+        });
+        break;
+      case OrderBy.SCORE:
+        break;
+      default:
+        log("order not founded : ${_searchOptions.orderBy}");
+    }
+
+    // 배열 바뀐거 알려주는 스트림
     update.add(++_updateCount);
     log(_updateCount.toString());
   }

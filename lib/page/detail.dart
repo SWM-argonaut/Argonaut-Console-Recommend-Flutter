@@ -20,7 +20,8 @@ class DetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("${switchGame?.title}"),
+        title:
+            Text("${switchGame?.title}", style: TextStyle(color: Colors.white)),
         centerTitle: true,
       ),
       body: LayoutBuilder(builder: (BuildContext context, constraints) {

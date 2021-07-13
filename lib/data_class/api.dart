@@ -1,10 +1,12 @@
+// TODO 할인률 넣으면 좋을듯
+
 class SwitchGame {
   String? _title;
   String? _idx;
   List<String>? _genres;
   List<String>? _languages;
   String? _playerCount;
-  String? _releaseDate;
+  DateTime? _releaseDate;
   List<String>? _images;
   SalePeriod? _salePeriod;
   NintendoStore? _nintendoStore;
@@ -16,7 +18,7 @@ class SwitchGame {
       List<String>? genres,
       List<String>? languages,
       String? playerCount,
-      String? releaseDate,
+      DateTime? releaseDate,
       List<String>? images,
       SalePeriod? salePeriod,
       NintendoStore? nintendoStore,
@@ -40,7 +42,7 @@ class SwitchGame {
   List<String>? get genres => _genres;
   List<String>? get languages => _languages;
   String? get playerCount => _playerCount;
-  String? get releaseDate => _releaseDate;
+  DateTime? get releaseDate => _releaseDate;
   List<String>? get images => _images;
   SalePeriod? get salePeriod => _salePeriod;
   NintendoStore? get nintendoStore => _nintendoStore;
@@ -54,8 +56,10 @@ class SwitchGame {
     _genres = json['genres']?.cast<String>();
     _languages = json['languages']?.cast<String>();
     _playerCount = json['playerCount'];
-    _releaseDate = json['releaseDate'];
     _images = json['images'];
+    _releaseDate = json['releaseDate'] != null
+        ? DateTime.parse(json['releaseDate'])
+        : null;
     _salePeriod = json['salePeriod'] != null
         ? new SalePeriod.fromJson(json['salePeriod'])
         : null;
@@ -73,15 +77,14 @@ class SwitchGame {
     data['genres'] = this._genres;
     data['languages'] = this._languages;
     data['playerCount'] = this._playerCount;
-    data['releaseDate'] = this._releaseDate;
     data['images'] = this._images;
-    data['salePeriod'] = this._salePeriod;
-    if (this._nintendoStore != null) {
-      data['nintendoStore'] = this._nintendoStore?.toJson();
-    }
-    if (this._coupang != null) {
-      data['coupang'] = this._coupang?.toJson();
-    }
+    data['releaseDate'] =
+        this._releaseDate != null ? this._releaseDate.toString() : null;
+    data['salePeriod'] =
+        this._salePeriod != null ? this._salePeriod?.toJson() : null;
+    data['nintendoStore'] =
+        this._nintendoStore != null ? this._nintendoStore?.toJson() : null;
+    data['coupang'] = this._coupang != null ? this._coupang?.toJson() : null;
     return data;
   }
 }
@@ -180,26 +183,26 @@ class Coupang {
 }
 
 class SalePeriod {
-  String? _start;
-  String? _end;
+  DateTime? _start;
+  DateTime? _end;
 
-  SalePeriod({String? start, String? end}) {
+  SalePeriod({DateTime? start, DateTime? end}) {
     this._start = start;
     this._end = end;
   }
 
-  String? get start => _start;
-  String? get end => _end;
+  DateTime? get start => _start;
+  DateTime? get end => _end;
 
   SalePeriod.fromJson(Map<String, dynamic> json) {
-    _start = json['start'];
-    _end = json['end'];
+    _start = json['start'] != null ? DateTime.parse(json['start']) : null;
+    _end = json['end'] != null ? DateTime.parse(json['end']) : null;
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['start'] = this._start;
-    data['end'] = this._end;
+    data['start'] = this._start != null ? this._start.toString() : null;
+    data['end'] = this._end != null ? this._end.toString() : null;
     return data;
   }
 }

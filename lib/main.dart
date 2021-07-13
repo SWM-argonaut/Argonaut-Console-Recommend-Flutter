@@ -39,6 +39,7 @@ class _MyAppState extends State<MyApp> {
       title: '닌텐도 스위치 게임 추천',
       theme: new ThemeData(
           fontFamily: 'JejuGothic',
+          primaryColor: topColor,
           scaffoldBackgroundColor: Colors.lime[50],
           bottomNavigationBarTheme: BottomNavigationBarThemeData(
               selectedItemColor: Colors.white,

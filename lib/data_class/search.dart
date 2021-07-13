@@ -8,27 +8,29 @@ import 'package:argonaut_console_recommend/data_class/api.dart';
 // ['네덜란드어', '독일어', '러시아어', '스페인어', '영어', '이태리어', '일본어', '중국어', '포르투갈어', '프랑스어', '한국어']
 
 enum Genre { AOS }
+const List<String> genreName = ['AOS'];
 enum Language { KOR }
+const List<String> languageName = ['한국어'];
 enum OrderBy {
   REVIEWS, //리뷰 수
-  PUBLISHEDDATE, //발매 순
-  FULLPRICE, // 정가
-  SALEPRICE, // 할인가
+  RELEASEDATE, //발매 순
+  PRICE, // 가격
   SCORE, //평점 순
 }
+const List<String> orderByName = ['리뷰 수', '발매일', '가격', '평점'];
 
 class SearchOptions {
   final Set<Genre> _genres = Set<Genre>(); // 장르들
   final Set<Language> _languages = Set<Language>(); // 장르들
 
   String searchText = "";
-  bool _asc = true; // ASC, DESC
-  OrderBy _orderBy = OrderBy.PUBLISHEDDATE;
+  bool _asc = false; // ASC, DESC
+  OrderBy _orderBy = OrderBy.RELEASEDATE;
 
-  get asc => _asc;
-  get orderBy => _orderBy;
-  get genres => _genres;
-  get languages => _languages;
+  bool get asc => _asc;
+  OrderBy get orderBy => _orderBy;
+  Set<Genre> get genres => _genres;
+  Set<Language> get languages => _languages;
 
   void addGenre(Genre genre) => _genres.add(genre);
   void removeGenre(Genre genre) => _genres.remove(genre);
