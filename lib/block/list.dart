@@ -22,6 +22,7 @@ class SwitchGameListBloc {
 
   int _updateCount = 0;
   final StreamController<int> update = StreamController<int>.broadcast();
+  final ValueNotifier<bool> iconIsOn = ValueNotifier<bool>(false);
 
   // TODO: 이것들 없애고 블럭 내에서 처리하도록 바꿔야 될듯.
   // 위에 아이템 눌렸을때 색깔 같은거 바꾸는데 사용
@@ -70,6 +71,12 @@ class SwitchGameListBloc {
 
     for (SwitchGame item in _switchGameList) {
       if (_searchOptions.checkItem(item)) _switchGameFilteredList.add(item);
+    }
+
+    if (_searchOptions.languages.length + _searchOptions.genres.length == 0) {
+      iconIsOn.value = false;
+    } else {
+      iconIsOn.value = true;
     }
 
     // updateStream을 밑에 함수에서 호출함

@@ -1,13 +1,38 @@
+import 'package:argonaut_console_recommend/data_class/search.dart';
 import 'package:argonaut_console_recommend/functions/text.dart';
 
 // TODO 할인률 넣으면 좋을듯
+
+Set<Genre> genreListToSet(List<String> _genres) {
+  Set<Genre> _tmp = Set<Genre>();
+
+  for (String _genre in _genres) {
+    int index = genreName.indexWhere((element) => element == _genre);
+    _tmp.add(index != -1 ? Genre.values[index] : Genre.ETC);
+  }
+
+  return _tmp;
+}
+
+Set<Language> languageListToSet(List<String> _languages) {
+  Set<Language> _tmp = Set<Language>();
+
+  for (String _language in _languages) {
+    int index = languageName.indexWhere((element) => element == _language);
+    if (index != -1) {
+      _tmp.add(Language.values[index]);
+    }
+  }
+
+  return _tmp;
+}
 
 class SwitchGame {
   String? _title;
   String? _titleForSearch;
   String? _idx;
-  List<String>? _genres;
-  List<String>? _languages;
+  Set<Genre>? _genres;
+  Set<Language>? _languages;
   String? _playerCount;
   DateTime? _releaseDate;
   List<String>? _images;
@@ -18,8 +43,8 @@ class SwitchGame {
   SwitchGame(
       {String? title,
       String? idx,
-      List<String>? genres,
-      List<String>? languages,
+      Set<Genre>? genres,
+      Set<Language>? languages,
       String? playerCount,
       DateTime? releaseDate,
       List<String>? images,
@@ -44,8 +69,8 @@ class SwitchGame {
   String? get title => _title;
   String? get titleForSearch => _titleForSearch;
   String? get idx => _idx;
-  List<String>? get genres => _genres;
-  List<String>? get languages => _languages;
+  Set<Genre>? get genres => _genres;
+  Set<Language>? get languages => _languages;
   String? get playerCount => _playerCount;
   DateTime? get releaseDate => _releaseDate;
   List<String>? get images => _images;
@@ -59,8 +84,8 @@ class SwitchGame {
     _title = json['title'];
     _titleForSearch = textForSearch(_title!);
     _idx = json['idx'].toString();
-    _genres = json['genres']?.cast<String>();
-    _languages = json['languages']?.cast<String>();
+    _genres = genreListToSet(json['genres']?.cast<String>());
+    _languages = languageListToSet(json['languages']?.cast<String>());
     _playerCount = json['playerCount'];
     _images = json['images'];
     _releaseDate = json['releaseDate'] != null

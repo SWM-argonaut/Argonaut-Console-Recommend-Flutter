@@ -52,23 +52,7 @@ class _HomeState extends State<Home> {
         elevation: 0.1,
         backgroundColor: topColor,
         title: Text("닌텐도 스위치 게임 추천", style: TextStyle(color: Colors.white)),
-        actions: [
-          Container(
-              width: 50,
-              margin: EdgeInsets.all(7),
-              alignment: Alignment.center,
-              color: Colors.transparent,
-              child: GestureDetector(
-                child: Icon(
-                  Icons.settings,
-                  color: Colors.white,
-                  size: 30,
-                ),
-                onTap: () {
-                  showDialog(context: context, builder: _optionDetailBuilder);
-                },
-              ))
-        ],
+        actions: [],
         // centerTitle: true,
       ),
       body: _home(),
@@ -139,15 +123,45 @@ Widget _searchBar(BuildContext context, double _height, double _width) {
 }
 
 Container _options(BuildContext context, double _height, double _width) {
+  const double _iconWidth = 50;
+
   return Container(
       child: Row(children: [
     Container(
       height: _height,
-      width: _width,
+      width: _width - _iconWidth,
       child: ValueListenableBuilder(
           valueListenable: switchGameListBloc.switchGameOrderNoti,
           builder: _orderListBuilder),
     ),
+    Container(
+        width: _iconWidth,
+        margin: EdgeInsets.only(top: 4),
+        alignment: Alignment.centerLeft,
+        color: Colors.transparent,
+        child: GestureDetector(
+          child: ValueListenableBuilder(
+            valueListenable: switchGameListBloc.iconIsOn,
+            builder: (_, bool _isOn, __) {
+              if (_isOn) {
+                return Icon(
+                  Icons.bookmark,
+                  color: Colors.green,
+                  size: 40,
+                );
+              }
+
+              return Icon(
+                Icons.bookmark,
+                color: Colors.orange,
+                size: 40,
+              );
+            },
+          ),
+          onTap: () {
+            showDialog(context: context, builder: _optionDetailBuilder);
+          },
+        ))
   ]));
 }
 
@@ -156,13 +170,121 @@ AlertDialog _optionDetailBuilder(BuildContext context) {
 
   return AlertDialog(
     scrollable: true,
-    title: Text('설정'),
     content: Form(
-      child: Text(
-        "이 앱은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.",
-        style: TextStyle(fontSize: 14, color: Colors.grey),
+      child: Column(children: [
+        _chipList(switchGameListBloc.genreOptionNotifier,
+            switchGameListBloc.languageOptionNotifier),
+        Padding(
+            padding: EdgeInsets.only(top: 20),
+            child: ElevatedButton(
+                onPressed: () => Navigator.pop(context), child: Text("확인")))
+      ]),
+    ),
+  );
+}
+
+Column _chipList(GenreOptionNotifier genreOptionNotifier,
+    LanguageOptionNotifier languageOptionNotifier) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      Text(
+        "장르",
+        style: TextStyle(fontSize: 20),
+      ),
+      ValueListenableBuilder(
+          valueListenable: genreOptionNotifier, builder: _buildGenreChipList),
+      Padding(padding: EdgeInsets.all(15)),
+      Text(
+        "언어",
+        style: TextStyle(fontSize: 20),
+      ),
+      ValueListenableBuilder(
+          valueListenable: languageOptionNotifier,
+          builder: _buildLanguageChipList),
+    ],
+  );
+}
+
+Wrap _buildLanguageChipList(BuildContext context, SearchOptions options, _) {
+  return Wrap(
+    spacing: 6.0,
+    runSpacing: 6.0,
+    children: Language.values.map((language) {
+      return _buildLanguageChip(language, options);
+    }).toList(),
+  );
+}
+
+Wrap _buildGenreChipList(BuildContext context, SearchOptions options, _) {
+  return Wrap(
+    spacing: 6.0,
+    runSpacing: 6.0,
+    children: Genre.values.map((genre) {
+      return _buildGenreChip(genre, options);
+    }).toList(),
+  );
+}
+
+ActionChip _buildLanguageChip(Language _language, SearchOptions options) {
+  Color _color = Colors.orange;
+  bool _selected = false;
+  if (options.languages.contains(_language)) {
+    _color = Colors.green;
+    _selected = true;
+  }
+
+  return ActionChip(
+    elevation: 6.0,
+    backgroundColor: _color,
+    padding: EdgeInsets.all(2.0),
+    shadowColor: Colors.grey[60],
+    label: Text(
+      languageName[_language.index],
+      style: TextStyle(
+        color: Colors.white,
       ),
     ),
+    onPressed: () {
+      if (_selected) {
+        switchGameListBloc.languageOptionNotifier.removeLanguage(_language);
+      } else {
+        switchGameListBloc.languageOptionNotifier.addLanguage(_language);
+      }
+      log(options.languages.toString());
+      switchGameListBloc.switchGameFilter();
+    },
+  );
+}
+
+ActionChip _buildGenreChip(Genre _genre, SearchOptions options) {
+  Color _color = Colors.orange;
+  bool _selected = false;
+  if (options.genres.contains(_genre)) {
+    _color = Colors.green;
+    _selected = true;
+  }
+
+  return ActionChip(
+    elevation: 6.0,
+    backgroundColor: _color,
+    padding: EdgeInsets.all(2.0),
+    shadowColor: Colors.grey[60],
+    label: Text(
+      genreName[_genre.index],
+      style: TextStyle(
+        color: Colors.white,
+      ),
+    ),
+    onPressed: () {
+      if (_selected) {
+        switchGameListBloc.genreOptionNotifier.removeGenre(_genre);
+      } else {
+        switchGameListBloc.genreOptionNotifier.addGenre(_genre);
+      }
+      log(options.genres.toString());
+      switchGameListBloc.switchGameFilter();
+    },
   );
 }
 
@@ -180,13 +302,13 @@ Center _orderListBuilder(BuildContext context, SearchOptions options, _) {
         _butttonColor = Colors.green;
         _child = Row(
           children: [
-            Text("${orderByName[index]}".split(".").last + " "),
+            Text("${orderByName[index]}"),
             Icon(options.asc ? Icons.arrow_upward : Icons.arrow_downward)
           ],
         );
       } else {
         _butttonColor = Colors.orange;
-        _child = Text("${orderByName[index]}".split(".").last);
+        _child = Text("${orderByName[index]}");
       }
       return Padding(
           padding: EdgeInsets.all(3),
