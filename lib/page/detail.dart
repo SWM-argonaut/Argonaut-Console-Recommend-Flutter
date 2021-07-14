@@ -2,35 +2,77 @@
 
 import 'package:flutter/material.dart';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
+
 import 'package:expandable/expandable.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
+import 'package:argonaut_console_recommend/block/firebase.dart'
+    show AnalyticsBloc;
+
 import 'package:argonaut_console_recommend/data_class/api.dart';
+
 import 'package:argonaut_console_recommend/functions/image.dart';
+
+final FirebaseAnalytics analytics = FirebaseAnalytics();
 
 void _launchURL(String _url) async =>
     await canLaunch(_url) ? await launch(_url) : throw 'Could not launch $_url';
 
-class DetailPage extends StatelessWidget {
+class DetailPage extends StatefulWidget {
   final SwitchGame? switchGame;
-  DetailPage({Key? key, required this.switchGame}) : super(key: key);
+  const DetailPage({Key? key, required this.switchGame}) : super(key: key);
+
+  @override
+  _DetailPageState createState() => _DetailPageState();
+}
+
+class _DetailPageState extends State<DetailPage> with RouteAware {
+  static const String routeName = '/detail';
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    AnalyticsBloc.observer
+        .subscribe(this, ModalRoute.of(context)! as PageRoute);
+  }
+
+  @override
+  void didPush() {
+    super.didPush();
+    AnalyticsBloc.observer.analytics.setCurrentScreen(
+        screenName: "${routeName}/${widget.switchGame?.title}");
+  }
+
+  @override
+  void didPopNext() {
+    super.didPopNext();
+    AnalyticsBloc.observer.analytics.setCurrentScreen(
+        screenName: "${routeName}/${widget.switchGame?.title}");
+  }
+
+  @override
+  void dispose() {
+    AnalyticsBloc.observer.unsubscribe(this);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title:
-            Text("${switchGame?.title}", style: TextStyle(color: Colors.white)),
+        title: Text("${widget.switchGame?.title}",
+            style: TextStyle(color: Colors.white)),
         centerTitle: true,
       ),
       body: LayoutBuilder(builder: (BuildContext context, constraints) {
         return SingleChildScrollView(
             child: Column(
           children: <Widget>[
-            _photos(context, switchGame, constraints),
-            _content(context, switchGame),
+            _photos(context, widget.switchGame, constraints),
+            _content(context, widget.switchGame),
             _bottomContent()
           ],
         ));
@@ -113,10 +155,19 @@ Container _buy(BuildContext context, SwitchGame? switchGame) {
           Padding(
               padding: EdgeInsets.fromLTRB(5, 10, 10, 10),
               child: ElevatedButton(
-                onPressed: () => _launchURL("${switchGame.coupang?.url}"),
                 style: ElevatedButton.styleFrom(
                     primary: Color.fromRGBO(66, 133, 244, 1.0)),
                 child: Text("쿠팡에서 구매", style: TextStyle(color: Colors.white)),
+                onPressed: () {
+                  analytics.logEvent(
+                      name: "store_opened",
+                      parameters: <String, dynamic>{
+                        "store": "coupang",
+                        "idx": "${switchGame.idx}",
+                        "title": "${switchGame.title}",
+                      });
+                  _launchURL("${switchGame.coupang?.url}");
+                },
               ))
         ]),
       ],
@@ -133,11 +184,20 @@ Container _buy(BuildContext context, SwitchGame? switchGame) {
         Padding(
             padding: EdgeInsets.all(10),
             child: ElevatedButton(
-              onPressed: () => _launchURL("${switchGame.nintendoStore?.url}"),
               style: ElevatedButton.styleFrom(
                   primary: Color.fromRGBO(230, 0, 17, 1.0)),
               child:
                   Text("닌텐도 스토어에서 구매", style: TextStyle(color: Colors.white)),
+              onPressed: () {
+                analytics.logEvent(
+                    name: "store_opened",
+                    parameters: <String, dynamic>{
+                      "store": "nintendo_store",
+                      "idx": "${switchGame.idx}",
+                      "title": "${switchGame.title}",
+                    });
+                _launchURL("${switchGame.nintendoStore?.url}");
+              },
             )),
       ],
     ));

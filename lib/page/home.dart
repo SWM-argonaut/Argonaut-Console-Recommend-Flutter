@@ -1,15 +1,20 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:keyboard_utils/keyboard_options.dart';
+
+import 'package:firebase_analytics/observer.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 
 import 'package:keyboard_utils/widgets.dart';
+import 'package:keyboard_utils/keyboard_options.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 import 'package:argonaut_console_recommend/configs.dart';
 
-import 'package:argonaut_console_recommend/block/api.dart';
-import 'package:argonaut_console_recommend/block/list.dart';
+import 'package:argonaut_console_recommend/block/firebase.dart'
+    show AnalyticsBloc;
+import 'package:argonaut_console_recommend/block/list.dart'
+    show SwitchGameListBloc;
 
 import 'package:argonaut_console_recommend/functions/image.dart';
 
@@ -19,9 +24,9 @@ import 'package:argonaut_console_recommend/data_class/api.dart';
 import 'package:argonaut_console_recommend/page/detail.dart';
 import 'package:argonaut_console_recommend/page/notification/notification_list.dart';
 
-late TextEditingController textController;
-final SwitchGameListBloc switchGameListBloc = SwitchGameListBloc();
 late Future<bool> _switchGameListInit;
+late TextEditingController textController;
+final FirebaseAnalytics analytics = FirebaseAnalytics();
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -30,16 +35,38 @@ class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeState extends State<Home> with RouteAware {
+  static const String routeName = '/list';
+
   @override
   void initState() {
     super.initState();
-    _switchGameListInit = switchGameListBloc.initGameList();
-    textController = switchGameListBloc.textController();
+    _switchGameListInit = SwitchGameListBloc.initGameList();
+    textController = SwitchGameListBloc.textController();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    AnalyticsBloc.observer
+        .subscribe(this, ModalRoute.of(context)! as PageRoute);
+  }
+
+  @override
+  void didPush() {
+    super.didPush();
+    AnalyticsBloc.observer.analytics.setCurrentScreen(screenName: routeName);
+  }
+
+  @override
+  void didPopNext() {
+    super.didPopNext();
+    AnalyticsBloc.observer.analytics.setCurrentScreen(screenName: routeName);
   }
 
   @override
   void dispose() {
+    AnalyticsBloc.observer.unsubscribe(this);
     textController.dispose();
     super.dispose();
   }
@@ -109,6 +136,32 @@ Widget _searchBar(BuildContext context, double _height, double _width) {
                         ),
                         onPressed: () {
                           FocusScope.of(context).requestFocus(FocusNode());
+                          if (SwitchGameListBloc.searchOptions.searchText !=
+                              "") {
+                            analytics.logEvent(
+                                name: "game_search",
+                                parameters: <String, dynamic>{
+                                  "search_text": SwitchGameListBloc
+                                      .searchOptions.searchText,
+                                  "search_genres": SwitchGameListBloc
+                                      .searchOptions.genres
+                                      .toString()
+                                      .replaceAll("Genre.", ""),
+                                  "search_languages": SwitchGameListBloc
+                                      .searchOptions.languages
+                                      .toString()
+                                      .replaceAll("Language.", ""),
+                                  "search_order_by": SwitchGameListBloc
+                                      .searchOptions.orderBy
+                                      .toString()
+                                      .split('.')
+                                      .last,
+                                  "search_order":
+                                      SwitchGameListBloc.searchOptions.asc
+                                          ? "ASC"
+                                          : "DESC",
+                                });
+                          }
                         },
                       ),
                     ],
@@ -131,7 +184,7 @@ Container _options(BuildContext context, double _height, double _width) {
       height: _height,
       width: _width - _iconWidth,
       child: ValueListenableBuilder(
-          valueListenable: switchGameListBloc.switchGameOrderNoti,
+          valueListenable: SwitchGameListBloc.switchGameOrderNoti,
           builder: _orderListBuilder),
     ),
     Container(
@@ -141,7 +194,7 @@ Container _options(BuildContext context, double _height, double _width) {
         color: Colors.transparent,
         child: GestureDetector(
           child: ValueListenableBuilder(
-            valueListenable: switchGameListBloc.iconIsOn,
+            valueListenable: SwitchGameListBloc.iconIsOn,
             builder: (_, bool _isOn, __) {
               if (_isOn) {
                 return Icon(
@@ -159,7 +212,11 @@ Container _options(BuildContext context, double _height, double _width) {
             },
           ),
           onTap: () {
-            showDialog(context: context, builder: _optionDetailBuilder);
+            AnalyticsBloc.observer.analytics
+                .setCurrentScreen(screenName: "/tag_dialog");
+            showDialog(context: context, builder: _optionDetailBuilder).then(
+                (value) => AnalyticsBloc.observer.analytics
+                    .setCurrentScreen(screenName: "${_HomeState.routeName}"));
           },
         ))
   ]));
@@ -172,8 +229,8 @@ AlertDialog _optionDetailBuilder(BuildContext context) {
     scrollable: true,
     content: Form(
       child: Column(children: [
-        _chipList(switchGameListBloc.genreOptionNotifier,
-            switchGameListBloc.languageOptionNotifier),
+        _chipList(SwitchGameListBloc.genreOptionNotifier,
+            SwitchGameListBloc.languageOptionNotifier),
         Padding(
             padding: EdgeInsets.only(top: 20),
             child: ElevatedButton(
@@ -247,12 +304,12 @@ ActionChip _buildLanguageChip(Language _language, SearchOptions options) {
     ),
     onPressed: () {
       if (_selected) {
-        switchGameListBloc.languageOptionNotifier.removeLanguage(_language);
+        SwitchGameListBloc.languageOptionNotifier.removeLanguage(_language);
       } else {
-        switchGameListBloc.languageOptionNotifier.addLanguage(_language);
+        SwitchGameListBloc.languageOptionNotifier.addLanguage(_language);
       }
       log(options.languages.toString());
-      switchGameListBloc.switchGameFilter();
+      SwitchGameListBloc.switchGameFilter();
     },
   );
 }
@@ -278,12 +335,12 @@ ActionChip _buildGenreChip(Genre _genre, SearchOptions options) {
     ),
     onPressed: () {
       if (_selected) {
-        switchGameListBloc.genreOptionNotifier.removeGenre(_genre);
+        SwitchGameListBloc.genreOptionNotifier.removeGenre(_genre);
       } else {
-        switchGameListBloc.genreOptionNotifier.addGenre(_genre);
+        SwitchGameListBloc.genreOptionNotifier.addGenre(_genre);
       }
       log(options.genres.toString());
-      switchGameListBloc.switchGameFilter();
+      SwitchGameListBloc.switchGameFilter();
     },
   );
 }
@@ -314,8 +371,16 @@ Center _orderListBuilder(BuildContext context, SearchOptions options, _) {
           padding: EdgeInsets.all(3),
           child: ElevatedButton(
             onPressed: () {
-              switchGameListBloc.switchGameOrderNoti.clicked(_order);
-              switchGameListBloc.switchGameSortByOrder();
+              SwitchGameListBloc.switchGameOrderNoti.clicked(_order);
+              SwitchGameListBloc.switchGameSortByOrder();
+              analytics.logEvent(name: "order", parameters: <String, dynamic>{
+                "search_order_by": SwitchGameListBloc.searchOptions.orderBy
+                    .toString()
+                    .split('.')
+                    .last,
+                "search_order":
+                    SwitchGameListBloc.searchOptions.asc ? "ASC" : "DESC",
+              });
             },
             child: _child,
             style:
@@ -341,20 +406,20 @@ _buildList() {
             return Center(child: CircularProgressIndicator());
           }
 
-          if (switchGameListBloc.itemCount == 0) {
+          if (SwitchGameListBloc.itemCount == 0) {
             return Center(child: Text("서버와 통신이 되지 않습니다."));
           }
 
           return StreamBuilder(
-              stream: switchGameListBloc.update.stream,
+              stream: SwitchGameListBloc.update.stream,
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 return ListView.builder(
                   scrollDirection: Axis.vertical,
                   shrinkWrap: true,
-                  itemCount: switchGameListBloc.filteredItemCount,
+                  itemCount: SwitchGameListBloc.filteredItemCount,
                   itemBuilder: (BuildContext context, int index) {
                     return _buildCard(
-                        context, switchGameListBloc.filteredItems[index]);
+                        context, SwitchGameListBloc.filteredItems[index]);
                   },
                 );
               });

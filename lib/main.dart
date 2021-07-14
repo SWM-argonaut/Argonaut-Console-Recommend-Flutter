@@ -2,22 +2,26 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 
-import 'package:firebase_analytics/observer.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 import 'package:localstorage/localstorage.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 import 'package:argonaut_console_recommend/configs.dart';
 
+import 'package:argonaut_console_recommend/block/firebase.dart'
+    show AnalyticsBloc;
+
 import 'package:argonaut_console_recommend/data_class/notificationItem.dart';
 
 import 'package:argonaut_console_recommend/page/home.dart';
 import 'package:argonaut_console_recommend/page/notification/notification_detail.dart';
 
-FirebaseAnalytics analytics = FirebaseAnalytics();
-
-void main() => runApp(new MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(const MyApp());
+}
 
 // TODO 강제 업데이트 : https://bebesoft.tistory.com/45
 
@@ -29,6 +33,8 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  _MyAppState();
+
   static final _navigatorKey = new GlobalKey<NavigatorState>();
 
   @override
@@ -40,19 +46,19 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-      title: '닌텐도 스위치 게임 추천',
-      navigatorKey: _navigatorKey,
-      navigatorObservers: [FirebaseAnalyticsObserver(analytics: analytics)],
-      theme: new ThemeData(
-          fontFamily: 'JejuGothic',
-          primaryColor: topColor,
-          scaffoldBackgroundColor: Colors.lime[50],
-          bottomNavigationBarTheme: BottomNavigationBarThemeData(
-              selectedItemColor: Colors.white,
-              unselectedItemColor: Colors.black)),
-      home: new Home(),
-      // routes: {},
-    );
+        title: '닌텐도 스위치 게임 추천',
+        navigatorKey: _navigatorKey,
+        navigatorObservers: [AnalyticsBloc.observer],
+        theme: new ThemeData(
+            fontFamily: 'JejuGothic',
+            primaryColor: topColor,
+            scaffoldBackgroundColor: Colors.lime[50],
+            bottomNavigationBarTheme: BottomNavigationBarThemeData(
+                selectedItemColor: Colors.white,
+                unselectedItemColor: Colors.black)),
+        home: new Home()
+        // routes: {},
+        );
   }
 
   Future<void> initOneSignal() async {

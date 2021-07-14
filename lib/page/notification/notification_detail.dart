@@ -15,14 +15,10 @@ class PushDetail extends StatefulWidget {
   const PushDetail({Key? key, this.item}) : super(key: key);
 
   @override
-  _PushDetailState createState() => _PushDetailState(item: item);
+  _PushDetailState createState() => _PushDetailState();
 }
 
 class _PushDetailState extends State<PushDetail> {
-  final NotificationItem? item;
-
-  _PushDetailState({this.item});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,11 +30,11 @@ class _PushDetailState extends State<PushDetail> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "title : ${item?.title}\n",
+                "title : ${widget.item?.title}\n",
                 style: titleStyle,
               ),
               Text(
-                "body : ${item?.body}",
+                "body : ${widget.item?.body}",
                 style: bodyStyle,
               )
             ],

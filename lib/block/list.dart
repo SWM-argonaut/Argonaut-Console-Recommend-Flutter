@@ -17,33 +17,35 @@ import 'package:argonaut_console_recommend/data_class/api.dart';
 
 class SwitchGameListBloc {
   static SearchOptions _searchOptions = SearchOptions();
+  static bool _init = false;
 
-  bool _init = false;
-
-  int _updateCount = 0;
-  final StreamController<int> update = StreamController<int>.broadcast();
-  final ValueNotifier<bool> iconIsOn = ValueNotifier<bool>(false);
+  static int _updateCount = 0;
+  static StreamController<int> update = StreamController<int>.broadcast();
+  static ValueNotifier<bool> iconIsOn = ValueNotifier<bool>(false);
 
   // TODO: 이것들 없애고 블럭 내에서 처리하도록 바꿔야 될듯.
   // 위에 아이템 눌렸을때 색깔 같은거 바꾸는데 사용
-  final ItemOrderNotifier switchGameOrderNoti =
+  static ItemOrderNotifier switchGameOrderNoti =
       ItemOrderNotifier(_searchOptions);
   // 장르 태그 눌렀을때 색 바꿀려고
-  final GenreOptionNotifier genreOptionNotifier =
+  static GenreOptionNotifier genreOptionNotifier =
       GenreOptionNotifier(_searchOptions);
   // 언어 태그 눌렀을때 색 바꿀려고
-  final LanguageOptionNotifier languageOptionNotifier =
+  static LanguageOptionNotifier languageOptionNotifier =
       LanguageOptionNotifier(_searchOptions);
 
-  late List<SwitchGame> _switchGameList; // 풀리스트
-  List<SwitchGame> _switchGameFilteredList = []; // 필터링 && 정렬된 리스트
+  static late List<SwitchGame> _switchGameList; // 풀리스트
+  static List<SwitchGame> _switchGameFilteredList = []; // 필터링 && 정렬된 리스트
 
-  get itemCount => _switchGameList.length; // 전체 아이템
-  get filteredItemCount => _switchGameFilteredList.length; // 필터링된 아이템
-  get filteredItems => _switchGameFilteredList;
+  static bool get init => _init;
+  static SearchOptions get searchOptions => _searchOptions;
+  static int get itemCount => _switchGameList.length; // 전체 아이템
+  static int get filteredItemCount =>
+      _switchGameFilteredList.length; // 필터링된 아이템
+  static List<SwitchGame> get filteredItems => _switchGameFilteredList;
 
   // 텍스트 입력 들어오면 바로바로 필터링 하려고 리스너 등록 목적
-  TextEditingController textController() {
+  static TextEditingController textController() {
     TextEditingController _textController = TextEditingController();
 
     // add listener
@@ -57,7 +59,7 @@ class SwitchGameListBloc {
   }
 
   // 처음 리스트 초기화
-  Future<bool> initGameList() async {
+  static Future<bool> initGameList() async {
     _switchGameList = await getSwitchGameList();
     _switchGameFilteredList = List<SwitchGame>.from(_switchGameList);
 
@@ -66,7 +68,7 @@ class SwitchGameListBloc {
   }
 
   // 텍스트, 옵션을 가지고 필터링하고 나중에 정렬도
-  void switchGameFilter() {
+  static void switchGameFilter() {
     _switchGameFilteredList = [];
 
     for (SwitchGame item in _switchGameList) {
@@ -84,9 +86,7 @@ class SwitchGameListBloc {
   }
 
   // 정렬
-  void switchGameSortByOrder() {
-    log(_searchOptions.asc.toString());
-
+  static void switchGameSortByOrder() {
     // 정보가 없는건 최하단으로
     switch (_searchOptions.orderBy) {
       case OrderBy.REVIEWS:
@@ -111,6 +111,11 @@ class SwitchGameListBloc {
 
     // 배열 바뀐거 알려주는 스트림
     update.add(++_updateCount);
-    log(_updateCount.toString());
+    log("list updated : " +
+        _updateCount.toString() +
+        ", order : " +
+        (_searchOptions.asc ? "ASC" : "DESC") +
+        ", by : " +
+        _searchOptions.orderBy.toString().split(".").last);
   }
 }
