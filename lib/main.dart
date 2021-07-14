@@ -2,6 +2,9 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 
+import 'package:firebase_analytics/observer.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+
 import 'package:localstorage/localstorage.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 
@@ -11,6 +14,8 @@ import 'package:argonaut_console_recommend/data_class/notificationItem.dart';
 
 import 'package:argonaut_console_recommend/page/home.dart';
 import 'package:argonaut_console_recommend/page/notification/notification_detail.dart';
+
+FirebaseAnalytics analytics = FirebaseAnalytics();
 
 void main() => runApp(new MyApp());
 
@@ -35,8 +40,9 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-      navigatorKey: _navigatorKey,
       title: '닌텐도 스위치 게임 추천',
+      navigatorKey: _navigatorKey,
+      navigatorObservers: [FirebaseAnalyticsObserver(analytics: analytics)],
       theme: new ThemeData(
           fontFamily: 'JejuGothic',
           primaryColor: topColor,

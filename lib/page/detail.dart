@@ -19,6 +19,7 @@ class DetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title:
             Text("${switchGame?.title}", style: TextStyle(color: Colors.white)),
@@ -45,59 +46,114 @@ Container _photos(
 }
 
 Container _content(BuildContext context, SwitchGame? switchGame) {
-  const Color _ratingBackgroundColor = Colors.grey;
-  const Color _ratingValueColor = Colors.amber;
-
   return Container(
     padding: EdgeInsets.all(10.0),
     child: Column(
       children: <Widget>[
-        RatingBarIndicator(
+        _rating(switchGame),
+        _description(switchGame),
+        _buy(context, switchGame),
+      ],
+    ),
+  );
+}
+
+Widget _rating(SwitchGame? switchGame) {
+  const Color _ratingBackgroundColor = Colors.grey;
+  const Color _ratingValueColor = Colors.amber;
+
+  if (switchGame?.coupang == null || switchGame?.coupang?.rating == null) {
+    return Container();
+  }
+
+  return Row(children: [
+    Padding(
+        padding: EdgeInsets.all(10),
+        child: RatingBarIndicator(
           rating: (switchGame?.coupang?.rating ?? 0).toDouble() / 20,
           itemBuilder: (context, index) => Icon(
             Icons.star,
             color: _ratingValueColor,
           ),
           itemCount: 5,
-          itemSize: 50.0,
+          itemSize: 30.0,
           unratedColor: _ratingBackgroundColor,
           direction: Axis.horizontal,
-        ),
-        ExpandablePanel(
-          header: Padding(
-              padding: EdgeInsets.all(12),
-              child: Text(
-                "상세 설명",
-                style: TextStyle(color: Colors.black, fontSize: 15),
-              )),
-          collapsed: Container(),
-          expanded: Text("${switchGame?.nintendoStore?.description}",
-              softWrap: true, style: TextStyle(color: Colors.black)),
-        ),
+        )),
+    Text("${switchGame?.coupang?.ratingCount}")
+  ]);
+}
+
+ExpandablePanel _description(SwitchGame? switchGame) {
+  return ExpandablePanel(
+    header: Padding(
+        padding: EdgeInsets.all(12),
+        child: Text(
+          "상세 설명",
+          style: TextStyle(color: Colors.black, fontSize: 15),
+        )),
+    collapsed: Container(),
+    expanded: Text("${switchGame?.nintendoStore?.description}",
+        softWrap: true, style: TextStyle(color: Colors.black)),
+  );
+}
+
+Container _buy(BuildContext context, SwitchGame? switchGame) {
+  List<Widget> _widget = [];
+
+  if (switchGame!.coupang != null) {
+    _widget.add(Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
         Padding(
-            padding: EdgeInsets.symmetric(vertical: 16.0),
-            child: ElevatedButton(
-              onPressed: () => _launchURL("${switchGame?.coupang?.url}"),
-              style: ElevatedButton.styleFrom(
-                  primary: Color.fromRGBO(58, 66, 86, 1.0)),
-              child: Text("쿠팡에서 구매", style: TextStyle(color: Colors.white)),
-            )),
+            padding: EdgeInsets.all(10),
+            child: Text("쿠팡 가격 : ${switchGame.coupang?.price}")),
+        Row(children: [
+          Container(width: 50, child: Image.asset("assets/images/rocket.png")),
+          Padding(
+              padding: EdgeInsets.fromLTRB(5, 10, 10, 10),
+              child: ElevatedButton(
+                onPressed: () => _launchURL("${switchGame.coupang?.url}"),
+                style: ElevatedButton.styleFrom(
+                    primary: Color.fromRGBO(66, 133, 244, 1.0)),
+                child: Text("쿠팡에서 구매", style: TextStyle(color: Colors.white)),
+              ))
+        ]),
+      ],
+    ));
+  }
+
+  if (switchGame.nintendoStore != null) {
+    _widget.add(Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
         Padding(
-            padding: EdgeInsets.symmetric(vertical: 16.0),
+            padding: EdgeInsets.all(10),
+            child: Text("스토어 가격 : ${switchGame.nintendoStore?.price}")),
+        Padding(
+            padding: EdgeInsets.all(10),
             child: ElevatedButton(
-              onPressed: () => _launchURL("${switchGame?.nintendoStore?.url}"),
+              onPressed: () => _launchURL("${switchGame.nintendoStore?.url}"),
               style: ElevatedButton.styleFrom(
-                  primary: Color.fromRGBO(58, 66, 86, 1.0)),
+                  primary: Color.fromRGBO(230, 0, 17, 1.0)),
               child:
                   Text("닌텐도 스토어에서 구매", style: TextStyle(color: Colors.white)),
-            ))
+            )),
       ],
-    ),
-  );
+    ));
+  }
+
+  return Container(
+      color: Colors.white,
+      margin: EdgeInsets.all(5),
+      child: Column(
+        children: _widget,
+      ));
 }
 
 Widget _bottomContent() {
   return Container(
       alignment: Alignment.bottomCenter,
+      padding: EdgeInsets.only(top: 140),
       child: Text("이 앱은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다."));
 }
