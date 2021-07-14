@@ -1,5 +1,3 @@
-const String requestURL = "requestURL";
-const String OnesiganlAppId = "YOUR-KEY";
 import 'package:flutter/material.dart';
 
 const String requestURL = "requestURL";
