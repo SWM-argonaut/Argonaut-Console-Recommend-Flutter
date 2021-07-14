@@ -26,7 +26,6 @@ import 'package:argonaut_console_recommend/page/notification/notification_list.d
 
 late Future<bool> _switchGameListInit;
 late TextEditingController textController;
-final FirebaseAnalytics analytics = FirebaseAnalytics();
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -138,7 +137,7 @@ Widget _searchBar(BuildContext context, double _height, double _width) {
                           FocusScope.of(context).requestFocus(FocusNode());
                           if (SwitchGameListBloc.searchOptions.searchText !=
                               "") {
-                            analytics.logEvent(
+                            AnalyticsBloc.analytics.logEvent(
                                 name: "game_search",
                                 parameters: <String, dynamic>{
                                   "search_text": SwitchGameListBloc
@@ -373,7 +372,8 @@ Center _orderListBuilder(BuildContext context, SearchOptions options, _) {
             onPressed: () {
               SwitchGameListBloc.switchGameOrderNoti.clicked(_order);
               SwitchGameListBloc.switchGameSortByOrder();
-              analytics.logEvent(name: "order", parameters: <String, dynamic>{
+              AnalyticsBloc.analytics
+                  .logEvent(name: "order", parameters: <String, dynamic>{
                 "search_order_by": SwitchGameListBloc.searchOptions.orderBy
                     .toString()
                     .split('.')

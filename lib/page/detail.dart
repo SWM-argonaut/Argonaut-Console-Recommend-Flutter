@@ -8,6 +8,8 @@ import 'package:expandable/expandable.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
+import 'package:argonaut_console_recommend/block/list.dart'
+    show SwitchGameListBloc;
 import 'package:argonaut_console_recommend/block/firebase.dart'
     show AnalyticsBloc;
 
@@ -41,15 +43,15 @@ class _DetailPageState extends State<DetailPage> with RouteAware {
   @override
   void didPush() {
     super.didPush();
-    AnalyticsBloc.observer.analytics.setCurrentScreen(
-        screenName: "${routeName}/${widget.switchGame?.title}");
+    AnalyticsBloc.observer.analytics
+        .setCurrentScreen(screenName: "$routeName/${widget.switchGame?.title}");
   }
 
   @override
   void didPopNext() {
     super.didPopNext();
-    AnalyticsBloc.observer.analytics.setCurrentScreen(
-        screenName: "${routeName}/${widget.switchGame?.title}");
+    AnalyticsBloc.observer.analytics
+        .setCurrentScreen(screenName: "$routeName/${widget.switchGame?.title}");
   }
 
   @override
@@ -60,6 +62,20 @@ class _DetailPageState extends State<DetailPage> with RouteAware {
 
   @override
   Widget build(BuildContext context) {
+    AnalyticsBloc.analytics
+        .logEvent(name: "detail", parameters: <String, dynamic>{
+      "search_text": SwitchGameListBloc.searchOptions.searchText,
+      "search_genres": SwitchGameListBloc.searchOptions.genres
+          .toString()
+          .replaceAll("Genre.", ""),
+      "search_languages": SwitchGameListBloc.searchOptions.languages
+          .toString()
+          .replaceAll("Language.", ""),
+      "search_order_by":
+          SwitchGameListBloc.searchOptions.orderBy.toString().split('.').last,
+      "search_order": SwitchGameListBloc.searchOptions.asc ? "ASC" : "DESC",
+    });
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
