@@ -184,7 +184,7 @@ ListTile _buildListTile(BuildContext context, SwitchGame? item) {
         padding: EdgeInsets.only(right: 12.0),
         decoration: new BoxDecoration(
             border: new Border(
-                right: new BorderSide(width: 1.0, color: Colors.white24))),
+                right: new BorderSide(width: 1.0, color: Colors.white))),
         child: getThumbnail(item)),
     title: Text("${item?.title}",
         style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),

@@ -52,7 +52,7 @@ class _MyAppState extends State<MyApp> {
         theme: new ThemeData(
             fontFamily: 'JejuGothic',
             primaryColor: topColor,
-            scaffoldBackgroundColor: Colors.lime[50],
+            scaffoldBackgroundColor: Colors.white,
             bottomNavigationBarTheme: BottomNavigationBarThemeData(
                 selectedItemColor: Colors.white,
                 unselectedItemColor: Colors.black)),

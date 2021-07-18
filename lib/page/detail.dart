@@ -88,7 +88,8 @@ class _DetailPageState extends State<DetailPage> with RouteAware {
 Container _photos(
     BuildContext context, SwitchGame? switchGame, BoxConstraints constraints) {
   return Container(
-      height: constraints.maxHeight / 3, child: imagePageView(switchGame));
+      height: constraints.maxHeight / 3,
+      child: ImagePageView(item: switchGame));
 }
 
 Container _content(BuildContext context, SwitchGame? switchGame) {
