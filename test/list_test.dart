@@ -7,5 +7,6 @@ void main() {
     assert(Genre.values.length == genreName.length);
     assert(Language.values.length == languageName.length);
     assert(OrderBy.values.length == orderByName.length);
+    assert(FilterOptions.values.length == filterOptionsName.length);
   });
 }

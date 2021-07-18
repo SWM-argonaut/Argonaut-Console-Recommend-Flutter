@@ -13,17 +13,19 @@ import 'package:argonaut_console_recommend/functions/sort.dart';
 import 'package:argonaut_console_recommend/functions/text.dart';
 
 import 'package:argonaut_console_recommend/data_class/search.dart';
-import 'package:argonaut_console_recommend/data_class/api.dart';
+import 'package:argonaut_console_recommend/data_class/switch_game.dart';
 
 class SwitchGameListBloc {
-  static SearchOptions _searchOptions = SearchOptions();
+  static SearchFilter _searchOptions = SearchFilter();
   static bool _init = false;
 
   static int _updateCount = 0;
   static StreamController<int> update = StreamController<int>.broadcast();
   static ValueNotifier<bool> iconIsOn = ValueNotifier<bool>(false);
 
-  // TODO: 이것들 없애고 블럭 내에서 처리하도록 바꿔야 될듯.
+  // 필터 옵션 눌렸을때 처리
+  static FilterOptionNotifier filterOptionNotifier =
+      FilterOptionNotifier(_searchOptions);
   // 위에 아이템 눌렸을때 색깔 같은거 바꾸는데 사용
   static ItemOrderNotifier switchGameOrderNoti =
       ItemOrderNotifier(_searchOptions);
@@ -38,7 +40,7 @@ class SwitchGameListBloc {
   static List<SwitchGame> _switchGameFilteredList = []; // 필터링 && 정렬된 리스트
 
   static bool get init => _init;
-  static SearchOptions get searchOptions => _searchOptions;
+  static SearchFilter get searchOptions => _searchOptions;
   static int get itemCount => _switchGameList.length; // 전체 아이템
   static int get filteredItemCount =>
       _switchGameFilteredList.length; // 필터링된 아이템

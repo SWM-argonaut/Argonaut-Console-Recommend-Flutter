@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:argonaut_console_recommend/data_class/api.dart';
+import 'package:argonaut_console_recommend/data_class/switch_game.dart';
 
 enum Genre {
   AOS,
@@ -86,7 +86,18 @@ const List<String> orderByName = [
   '평점',
 ];
 
-class SearchOptions {
+enum FilterOptions {
+  ORDER,
+  GENRE,
+  LANGUAGE,
+}
+const List<String> filterOptionsName = [
+  '정렬',
+  '장르',
+  '언어',
+];
+
+class SearchFilter {
   final Set<Genre> _genres = Set<Genre>(); // 장르들
   final Set<Language> _languages = Set<Language>(); // 장르들
 
@@ -94,11 +105,13 @@ class SearchOptions {
   String searchTextLowerCase = "";
   bool _asc = false; // ASC, DESC
   OrderBy _orderBy = OrderBy.RELEASEDATE;
+  FilterOptions? _filterOptions;
 
   bool get asc => _asc;
   OrderBy get orderBy => _orderBy;
   Set<Genre> get genres => _genres;
   Set<Language> get languages => _languages;
+  FilterOptions? get filterOptions => _filterOptions;
 
   void addGenre(Genre genre) => _genres.add(genre);
   void removeGenre(Genre genre) => _genres.remove(genre);
@@ -108,7 +121,11 @@ class SearchOptions {
   void removeLanguage(Language language) => _languages.remove(language);
   void clearLanguage() => _languages.clear();
 
-  void clicked(OrderBy item) {
+  void filterClicked(FilterOptions item) {
+    _filterOptions = _filterOptions != item ? item : null;
+  }
+
+  void orderClicked(OrderBy item) {
     if (item == _orderBy) {
       // if selected already, change just order
       _asc = !_asc;
@@ -135,18 +152,28 @@ class SearchOptions {
 }
 
 // 정렬만
-class ItemOrderNotifier extends ValueNotifier<SearchOptions> {
-  ItemOrderNotifier(SearchOptions value) : super(value);
+class FilterOptionNotifier extends ValueNotifier<SearchFilter> {
+  FilterOptionNotifier(SearchFilter value) : super(value);
 
-  void clicked(OrderBy item) {
-    value.clicked(item);
+  void clicked(FilterOptions _filterOption) {
+    value.filterClicked(_filterOption);
+    notifyListeners();
+  }
+}
+
+// 정렬만
+class ItemOrderNotifier extends ValueNotifier<SearchFilter> {
+  ItemOrderNotifier(SearchFilter value) : super(value);
+
+  void clicked(OrderBy _order) {
+    value.orderClicked(_order);
     notifyListeners();
   }
 }
 
 // 장르
-class GenreOptionNotifier extends ValueNotifier<SearchOptions> {
-  GenreOptionNotifier(SearchOptions value) : super(value);
+class GenreOptionNotifier extends ValueNotifier<SearchFilter> {
+  GenreOptionNotifier(SearchFilter value) : super(value);
 
   void addGenre(Genre genre) {
     value.addGenre(genre);
@@ -164,8 +191,8 @@ class GenreOptionNotifier extends ValueNotifier<SearchOptions> {
   }
 }
 
-class LanguageOptionNotifier extends ValueNotifier<SearchOptions> {
-  LanguageOptionNotifier(SearchOptions value) : super(value);
+class LanguageOptionNotifier extends ValueNotifier<SearchFilter> {
+  LanguageOptionNotifier(SearchFilter value) : super(value);
 
   void addLanguage(Language language) {
     value.addLanguage(language);

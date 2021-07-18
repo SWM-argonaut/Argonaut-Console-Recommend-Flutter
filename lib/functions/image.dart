@@ -6,7 +6,7 @@ import 'package:flutter/services.dart' show rootBundle;
 
 import 'package:extended_image/extended_image.dart';
 
-import 'package:argonaut_console_recommend/data_class/api.dart';
+import 'package:argonaut_console_recommend/data_class/switch_game.dart';
 
 Widget getThumbnail(SwitchGame? item) {
   if (item!.images != null && item.images!.length > 0) {
@@ -18,6 +18,11 @@ Widget getThumbnail(SwitchGame? item) {
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
           return CircularProgressIndicator();
+        }
+
+        if (snapshot.hasError) {
+          // not founded
+          return Icon(Icons.autorenew, color: Colors.white);
         }
 
         List<String> images =

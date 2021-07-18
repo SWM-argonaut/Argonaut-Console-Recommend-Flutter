@@ -10,10 +10,10 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 import 'package:argonaut_console_recommend/block/list.dart'
     show SwitchGameListBloc;
-import 'package:argonaut_console_recommend/block/firebase.dart'
+import 'package:argonaut_console_recommend/block/analytics.dart'
     show AnalyticsBloc;
 
-import 'package:argonaut_console_recommend/data_class/api.dart';
+import 'package:argonaut_console_recommend/data_class/switch_game.dart';
 
 import 'package:argonaut_console_recommend/functions/image.dart';
 
@@ -62,19 +62,7 @@ class _DetailPageState extends State<DetailPage> with RouteAware {
 
   @override
   Widget build(BuildContext context) {
-    AnalyticsBloc.analytics
-        .logEvent(name: "detail", parameters: <String, dynamic>{
-      "search_text": SwitchGameListBloc.searchOptions.searchText,
-      "search_genres": SwitchGameListBloc.searchOptions.genres
-          .toString()
-          .replaceAll("Genre.", ""),
-      "search_languages": SwitchGameListBloc.searchOptions.languages
-          .toString()
-          .replaceAll("Language.", ""),
-      "search_order_by":
-          SwitchGameListBloc.searchOptions.orderBy.toString().split('.').last,
-      "search_order": SwitchGameListBloc.searchOptions.asc ? "ASC" : "DESC",
-    });
+    AnalyticsBloc.onDetail(widget.switchGame?.idx, widget.switchGame?.title);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -175,13 +163,7 @@ Container _buy(BuildContext context, SwitchGame? switchGame) {
                     primary: Color.fromRGBO(66, 133, 244, 1.0)),
                 child: Text("쿠팡에서 구매", style: TextStyle(color: Colors.white)),
                 onPressed: () {
-                  analytics.logEvent(
-                      name: "store_opened",
-                      parameters: <String, dynamic>{
-                        "store": "coupang",
-                        "idx": "${switchGame.idx}",
-                        "title": "${switchGame.title}",
-                      });
+                  AnalyticsBloc.onCoupang(switchGame.idx, switchGame.title);
                   _launchURL("${switchGame.coupang?.url}");
                 },
               ))
@@ -205,13 +187,7 @@ Container _buy(BuildContext context, SwitchGame? switchGame) {
               child:
                   Text("닌텐도 스토어에서 구매", style: TextStyle(color: Colors.white)),
               onPressed: () {
-                analytics.logEvent(
-                    name: "store_opened",
-                    parameters: <String, dynamic>{
-                      "store": "nintendo_store",
-                      "idx": "${switchGame.idx}",
-                      "title": "${switchGame.title}",
-                    });
+                AnalyticsBloc.onNintendoStore(switchGame.idx, switchGame.title);
                 _launchURL("${switchGame.nintendoStore?.url}");
               },
             )),

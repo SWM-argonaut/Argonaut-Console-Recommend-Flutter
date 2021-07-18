@@ -9,7 +9,7 @@ import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 import 'package:argonaut_console_recommend/configs.dart';
 
-import 'package:argonaut_console_recommend/block/firebase.dart'
+import 'package:argonaut_console_recommend/block/analytics.dart'
     show AnalyticsBloc;
 
 import 'package:argonaut_console_recommend/data_class/notificationItem.dart';
