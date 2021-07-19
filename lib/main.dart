@@ -50,7 +50,7 @@ class _MyAppState extends State<MyApp> {
         navigatorKey: _navigatorKey,
         navigatorObservers: [AnalyticsBloc.observer],
         theme: new ThemeData(
-            fontFamily: 'JejuGothic',
+            fontFamily: 'NEXONLv1Gothic',
             primaryColor: topColor,
             scaffoldBackgroundColor: Colors.white,
             bottomNavigationBarTheme: BottomNavigationBarThemeData(
