@@ -7,15 +7,14 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 
-import 'package:argonaut_console_recommend/configs.dart';
+import 'package:console_game_db/configs.dart';
 
-import 'package:argonaut_console_recommend/block/analytics.dart'
-    show AnalyticsBloc;
+import 'package:console_game_db/block/analytics.dart' show AnalyticsBloc;
 
-import 'package:argonaut_console_recommend/data_class/notificationItem.dart';
+import 'package:console_game_db/data_class/notificationItem.dart';
 
-import 'package:argonaut_console_recommend/page/home.dart';
-import 'package:argonaut_console_recommend/page/notification/notification_detail.dart';
+import 'package:console_game_db/page/home.dart';
+import 'package:console_game_db/page/notification/notification_detail.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -46,7 +45,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-        title: '닌텐도 스위치 게임 추천',
+        title: '콘솔 게임 DB',
         navigatorKey: _navigatorKey,
         navigatorObservers: [AnalyticsBloc.observer],
         theme: new ThemeData(

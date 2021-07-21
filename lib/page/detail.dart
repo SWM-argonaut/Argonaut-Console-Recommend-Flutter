@@ -8,14 +8,14 @@ import 'package:expandable/expandable.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
-import 'package:argonaut_console_recommend/block/list.dart'
-    show SwitchGameListBloc;
-import 'package:argonaut_console_recommend/block/analytics.dart'
-    show AnalyticsBloc;
+import 'package:console_game_db/block/list.dart' show SwitchGameListBloc;
+import 'package:console_game_db/block/analytics.dart' show AnalyticsBloc;
 
-import 'package:argonaut_console_recommend/data_class/switch_game.dart';
+import 'package:console_game_db/functions/number.dart';
 
-import 'package:argonaut_console_recommend/functions/image.dart';
+import 'package:console_game_db/data_class/switch_game.dart';
+
+import 'package:console_game_db/functions/image.dart';
 
 final FirebaseAnalytics analytics = FirebaseAnalytics();
 
@@ -77,7 +77,7 @@ class _DetailPageState extends State<DetailPage> with RouteAware {
           children: <Widget>[
             _photos(context, widget.switchGame, constraints),
             _content(context, widget.switchGame),
-            _bottomContent()
+            _bottomContent(widget.switchGame)
           ],
         ));
       }),
@@ -139,9 +139,18 @@ ExpandablePanel _description(SwitchGame? switchGame) {
           "상세 설명",
           style: TextStyle(color: Colors.black, fontSize: 15),
         )),
-    collapsed: Container(),
-    expanded: Text("${switchGame?.nintendoStore?.description}",
-        softWrap: true, style: TextStyle(color: Colors.black)),
+    collapsed: Text(
+      "${switchGame?.nintendoStore?.description}",
+      softWrap: true,
+      style: TextStyle(color: Colors.black),
+      maxLines: 3,
+      overflow: TextOverflow.ellipsis,
+    ),
+    expanded: Text(
+      "${switchGame?.nintendoStore?.description}",
+      softWrap: true,
+      style: TextStyle(color: Colors.black),
+    ),
   );
 }
 
@@ -154,7 +163,7 @@ Container _buy(BuildContext context, SwitchGame? switchGame) {
       children: [
         Padding(
             padding: EdgeInsets.all(10),
-            child: Text("쿠팡 가격 : ${switchGame.coupang?.price}")),
+            child: Text("쿠팡 가격 : ${priceString(switchGame.coupang?.price)}")),
         Row(children: [
           Container(width: 50, child: Image.asset("assets/images/rocket.png")),
           Padding(
@@ -179,14 +188,14 @@ Container _buy(BuildContext context, SwitchGame? switchGame) {
       children: [
         Padding(
             padding: EdgeInsets.all(10),
-            child: Text("스토어 가격 : ${switchGame.nintendoStore?.price}")),
+            child: Text(
+                "스토어 가격 : ${priceString(switchGame.nintendoStore?.price)}")),
         Padding(
             padding: EdgeInsets.all(10),
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                   primary: Color.fromRGBO(230, 0, 17, 1.0)),
-              child:
-                  Text("닌텐도 스토어에서 구매", style: TextStyle(color: Colors.white)),
+              child: Text("e샵에서 구매", style: TextStyle(color: Colors.white)),
               onPressed: () {
                 AnalyticsBloc.onNintendoStore(switchGame.idx, switchGame.title);
                 _launchURL("${switchGame.nintendoStore?.url}");
@@ -204,9 +213,12 @@ Container _buy(BuildContext context, SwitchGame? switchGame) {
       ));
 }
 
-Widget _bottomContent() {
-  return Container(
-      alignment: Alignment.bottomCenter,
-      padding: EdgeInsets.only(top: 140),
-      child: Text("이 앱은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다."));
+Widget _bottomContent(SwitchGame? switchGame) {
+  if (switchGame!.coupang != null && switchGame.coupang?.isPartner == true) {
+    return Container(
+        alignment: Alignment.bottomCenter,
+        padding: EdgeInsets.only(top: 140),
+        child: Text("이 앱은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다."));
+  }
+  return Container();
 }

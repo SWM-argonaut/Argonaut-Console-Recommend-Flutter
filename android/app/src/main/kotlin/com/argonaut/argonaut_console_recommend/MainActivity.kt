@@ -1,4 +1,4 @@
-package com.argonaut.argonaut_console_recommend
+package com.argonaut.console_game_db
 
 import io.flutter.embedding.android.FlutterActivity
 

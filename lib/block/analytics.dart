@@ -1,8 +1,7 @@
 import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 
-import 'package:argonaut_console_recommend/block/list.dart'
-    show SwitchGameListBloc;
+import 'package:console_game_db/block/list.dart' show SwitchGameListBloc;
 
 class AnalyticsBloc {
   static FirebaseAnalytics analytics = FirebaseAnalytics();

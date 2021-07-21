@@ -3,9 +3,9 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-import 'package:argonaut_console_recommend/configs.dart' show requestURL;
+import 'package:console_game_db/configs.dart' show requestURL;
 
-import 'package:argonaut_console_recommend/data_class/switch_game.dart';
+import 'package:console_game_db/data_class/switch_game.dart';
 
 Future<List<SwitchGame>> getSwitchGameList() async {
   var url = Uri.parse(requestURL);

@@ -1,4 +1,4 @@
-import 'package:argonaut_console_recommend/data_class/switch_game.dart';
+import 'package:console_game_db/data_class/switch_game.dart';
 
 // 출시일로 정렬하고 같으면 가격으로 정렬
 int orderByReleasedate(SwitchGame a, SwitchGame b, bool asc) {

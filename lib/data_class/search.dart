@@ -1,7 +1,19 @@
 import 'package:flutter/material.dart';
 
-import 'package:argonaut_console_recommend/data_class/switch_game.dart';
+import 'package:console_game_db/data_class/switch_game.dart';
 
+enum OrderBy {
+  REVIEWS, //리뷰 수
+  RELEASEDATE, //발매 순
+  PRICE, // 가격
+  SCORE, //평점 순
+}
+const List<String> orderByName = [
+  '리뷰 수',
+  '발매일',
+  '가격',
+  '평점',
+];
 enum Genre {
   AOS,
   RPG,
@@ -73,31 +85,28 @@ const List<String> languageName = [
   '포르투갈어',
   '프랑스어',
 ];
-enum OrderBy {
-  REVIEWS, //리뷰 수
-  RELEASEDATE, //발매 순
-  PRICE, // 가격
-  SCORE, //평점 순
+enum Console {
+  SWITCH,
 }
-const List<String> orderByName = [
-  '리뷰 수',
-  '발매일',
-  '가격',
-  '평점',
+const List<String> consoleName = [
+  '스위치',
 ];
 
 enum FilterOptions {
   ORDER,
   GENRE,
   LANGUAGE,
+  CONSOLE,
 }
 const List<String> filterOptionsName = [
   '정렬',
   '장르',
   '언어',
+  '콘솔',
 ];
 
 class SearchFilter {
+  FilterOptions? _filterOptions;
   final Set<Genre> _genres = Set<Genre>(); // 장르들
   final Set<Language> _languages = Set<Language>(); // 장르들
 
@@ -105,12 +114,13 @@ class SearchFilter {
   String searchTextLowerCase = "";
   bool _asc = false; // ASC, DESC
   OrderBy _orderBy = OrderBy.RELEASEDATE;
-  FilterOptions? _filterOptions;
+  Console _console = Console.SWITCH;
 
   bool get asc => _asc;
   OrderBy get orderBy => _orderBy;
   Set<Genre> get genres => _genres;
   Set<Language> get languages => _languages;
+  Console get console => _console;
   FilterOptions? get filterOptions => _filterOptions;
 
   void addGenre(Genre genre) => _genres.add(genre);
@@ -132,6 +142,10 @@ class SearchFilter {
     } else {
       _orderBy = item;
     }
+  }
+
+  void setConsle(Console item) {
+    _console = item;
   }
 
   bool checkItem(SwitchGame? item) {
@@ -206,6 +220,15 @@ class LanguageOptionNotifier extends ValueNotifier<SearchFilter> {
 
   void clearLanguage(Language language) {
     value.clearLanguage();
+    notifyListeners();
+  }
+}
+
+class ConsoleOptionNotifier extends ValueNotifier<SearchFilter> {
+  ConsoleOptionNotifier(SearchFilter value) : super(value);
+
+  void clicked(Console _console) {
+    value.setConsle(_console);
     notifyListeners();
   }
 }

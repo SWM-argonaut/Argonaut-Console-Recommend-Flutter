@@ -1,8 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.argonaut.argonaut_console_recommend">
+    package="com.argonaut.console_game_db">
     <uses-permission android:name="android.permission.INTERNET"   />
    <application
-        android:label="argonaut_console_recommend"
+        android:label="콘솔 게임 DB"
         android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"

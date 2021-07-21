@@ -1,31 +1,26 @@
 import 'dart:developer';
 
-import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
-
-import 'package:firebase_analytics/observer.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 
 import 'package:keyboard_utils/widgets.dart';
 import 'package:keyboard_utils/keyboard_options.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
-import 'package:argonaut_console_recommend/configs.dart';
+import 'package:console_game_db/configs.dart';
 
-import 'package:argonaut_console_recommend/block/analytics.dart'
-    show AnalyticsBloc;
-import 'package:argonaut_console_recommend/block/list.dart'
-    show SwitchGameListBloc;
+import 'package:console_game_db/block/analytics.dart' show AnalyticsBloc;
+import 'package:console_game_db/block/list.dart' show SwitchGameListBloc;
 
-import 'package:argonaut_console_recommend/functions/image.dart';
+import 'package:console_game_db/functions/image.dart';
+import 'package:console_game_db/functions/number.dart';
 
-import 'package:argonaut_console_recommend/data_class/search.dart';
-import 'package:argonaut_console_recommend/data_class/switch_game.dart';
+import 'package:console_game_db/data_class/search.dart';
+import 'package:console_game_db/data_class/switch_game.dart';
 
-import 'package:argonaut_console_recommend/widget/filter.dart';
+import 'package:console_game_db/widget/filter.dart';
 
-import 'package:argonaut_console_recommend/page/detail.dart';
-import 'package:argonaut_console_recommend/page/notification/notification_list.dart';
+import 'package:console_game_db/page/detail.dart';
+import 'package:console_game_db/page/notification/notification_list.dart';
 
 late Future<bool> _switchGameListInit;
 late TextEditingController textController;
@@ -211,12 +206,11 @@ ListTile _buildListTile(BuildContext context, SwitchGame? item) {
           flex: 4,
           child: Padding(
               padding: EdgeInsets.only(left: 10.0),
-              child: Text("${item?.nintendoStore?.price}원",
+              child: Text(priceString(item?.nintendoStore?.price),
                   style: TextStyle(color: Colors.black))),
         )
       ],
     ),
-    trailing: Icon(Icons.keyboard_arrow_right, color: Colors.black, size: 30.0),
     onTap: () {
       FocusScope.of(context).requestFocus(FocusNode());
       Navigator.push(

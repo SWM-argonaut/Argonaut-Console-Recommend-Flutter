@@ -4,11 +4,9 @@ import 'package:flutter/material.dart';
 
 import 'package:expandable/expandable.dart';
 
-import 'package:argonaut_console_recommend/block/analytics.dart'
-    show AnalyticsBloc;
-import 'package:argonaut_console_recommend/block/list.dart'
-    show SwitchGameListBloc;
-import 'package:argonaut_console_recommend/data_class/search.dart';
+import 'package:console_game_db/block/analytics.dart' show AnalyticsBloc;
+import 'package:console_game_db/block/list.dart' show SwitchGameListBloc;
+import 'package:console_game_db/data_class/search.dart';
 import 'package:flutter/rendering.dart';
 
 class SearchFilterBar extends StatefulWidget {
@@ -48,6 +46,7 @@ Container _filterBarBuilder(FilterOptions _filter) {
     _orderBar(),
     _genreBar(),
     _langaugeBar(),
+    _consoleBar(),
   ].elementAt(_filter.index);
 }
 
@@ -89,6 +88,20 @@ Container _langaugeBar() {
     child: ValueListenableBuilder(
         valueListenable: SwitchGameListBloc.languageOptionNotifier,
         builder: _buildLanguageChipList),
+  );
+}
+
+Container _consoleBar() {
+  return Container(
+    height: 50,
+    alignment: Alignment.center,
+    // padding: EdgeInsets.all(5),
+    decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.symmetric(horizontal: BorderSide(color: Colors.grey))),
+    child: ValueListenableBuilder(
+        valueListenable: SwitchGameListBloc.consoleOptionNotifier,
+        builder: _buildConsoleChipList),
   );
 }
 
@@ -173,6 +186,16 @@ Center _orderListBuilder(BuildContext context, __, _) {
   ));
 }
 
+Wrap _buildConsoleChipList(BuildContext context, SearchFilter options, _) {
+  return Wrap(
+    spacing: 6.0,
+    runSpacing: 6.0,
+    children: Console.values.map((console) {
+      return _buildConsoleChip(console, options);
+    }).toList(),
+  );
+}
+
 Wrap _buildLanguageChipList(BuildContext context, SearchFilter options, _) {
   return Wrap(
     spacing: 6.0,
@@ -190,6 +213,34 @@ Wrap _buildGenreChipList(BuildContext context, SearchFilter options, _) {
     children: Genre.values.map((genre) {
       return _buildGenreChip(genre, options);
     }).toList(),
+  );
+}
+
+ActionChip _buildConsoleChip(Console _console, SearchFilter options) {
+  Color _color = Colors.orange;
+  bool _selected = false;
+  if (options.console == _console) {
+    _color = Colors.green;
+    _selected = true;
+  }
+
+  return ActionChip(
+    elevation: 6.0,
+    backgroundColor: _color,
+    padding: EdgeInsets.all(2.0),
+    shadowColor: Colors.grey[60],
+    label: Text(
+      consoleName[_console.index],
+      style: TextStyle(
+        color: Colors.white,
+      ),
+    ),
+    onPressed: () {
+      if (!_selected) {
+        SwitchGameListBloc.consoleOptionNotifier.clicked(_console);
+      }
+      // TODO 정렬
+    },
   );
 }
 

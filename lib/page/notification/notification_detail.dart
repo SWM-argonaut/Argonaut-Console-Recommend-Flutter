@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:argonaut_console_recommend/data_class/notificationItem.dart';
+import 'package:console_game_db/data_class/notificationItem.dart';
 
 const titleStyle = TextStyle(
   fontSize: 50,

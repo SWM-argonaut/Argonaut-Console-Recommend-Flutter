@@ -5,13 +5,30 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-import 'package:argonaut_console_recommend/data_class/switch_game.dart';
+import 'package:console_game_db/configs.dart';
+
+import 'package:console_game_db/data_class/switch_game.dart';
 
 Widget getThumbnail(SwitchGame? item) {
+  const double _height = 50;
+  const double _width = 80;
+
   if (item!.images != null && item.images!.length > 0) {
-    return Image.network(item.images![0]);
+    return Container(
+        height: _height,
+        width: _width,
+        child: CachedNetworkImage(
+          imageUrl: "$requestImageURLBase${item.idx}/${item.images![0]}",
+          placeholder: (context, url) =>
+              Center(child: CircularProgressIndicator()),
+          errorWidget: (context, url, error) => Icon(Icons.image_not_supported),
+        ));
   }
-  return Icon(Icons.image_not_supported);
+  return Container(
+      height: _height,
+      width: _width,
+      alignment: Alignment.center,
+      child: Icon(Icons.image_not_supported));
 }
 
 class ImagePageView extends StatefulWidget {
@@ -27,6 +44,8 @@ class _ImagePageViewState extends State<ImagePageView> {
 
   @override
   Widget build(BuildContext context) {
+    List<String>? _images = widget.item!.images?.sublist(1);
+
     if (widget.item!.images != null && widget.item!.images!.length > 0) {
       return Column(children: [
         Expanded(
@@ -41,7 +60,7 @@ class _ImagePageViewState extends State<ImagePageView> {
                         _current = index;
                       });
                     }),
-                itemCount: widget.item!.images!.length,
+                itemCount: _images?.length ?? 0,
                 itemBuilder:
                     (BuildContext context, int itemIndex, int pageViewIndex) {
                   return Container(
@@ -50,9 +69,10 @@ class _ImagePageViewState extends State<ImagePageView> {
                       child: ClipRRect(
                         borderRadius: BorderRadius.all(Radius.circular(5.0)),
                         child: CachedNetworkImage(
-                          imageUrl: widget.item!.images![itemIndex],
+                          imageUrl:
+                              "$requestImageURLBase${widget.item!.idx}/${_images![itemIndex]}",
                           placeholder: (context, url) =>
-                              CircularProgressIndicator(),
+                              Center(child: CircularProgressIndicator()),
                           errorWidget: (context, url, error) =>
                               Icon(Icons.image_not_supported),
                         ),

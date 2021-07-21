@@ -1,5 +1,5 @@
-import 'package:argonaut_console_recommend/data_class/search.dart';
-import 'package:argonaut_console_recommend/functions/text.dart';
+import 'package:console_game_db/data_class/search.dart';
+import 'package:console_game_db/functions/text.dart';
 
 // TODO 할인률 넣으면 좋을듯
 
@@ -87,7 +87,7 @@ class SwitchGame {
     _genres = genreListToSet(json['genres']?.cast<String>());
     _languages = languageListToSet(json['languages']?.cast<String>());
     _playerCount = json['playerCount'];
-    _images = json['images'];
+    _images = json['images']?.cast<String>();
     _releaseDate = json['releaseDate'] != null
         ? DateTime.parse(json['releaseDate'])
         : null;

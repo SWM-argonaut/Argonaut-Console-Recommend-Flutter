@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 
 import 'package:localstorage/localstorage.dart';
 
-import 'package:argonaut_console_recommend/configs.dart' show notificationColor;
+import 'package:console_game_db/configs.dart' show notificationColor;
 
-import 'package:argonaut_console_recommend/data_class/notificationItem.dart';
-import 'package:argonaut_console_recommend/page/notification/notification_detail.dart';
+import 'package:console_game_db/data_class/notificationItem.dart';
+import 'package:console_game_db/page/notification/notification_detail.dart';
 
 class PushList extends StatefulWidget {
   const PushList({Key? key}) : super(key: key);

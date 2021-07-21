@@ -5,15 +5,15 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
-import 'package:argonaut_console_recommend/configs.dart';
+import 'package:console_game_db/configs.dart';
 
-import 'package:argonaut_console_recommend/block/api.dart';
+import 'package:console_game_db/block/api.dart';
 
-import 'package:argonaut_console_recommend/functions/sort.dart';
-import 'package:argonaut_console_recommend/functions/text.dart';
+import 'package:console_game_db/functions/sort.dart';
+import 'package:console_game_db/functions/text.dart';
 
-import 'package:argonaut_console_recommend/data_class/search.dart';
-import 'package:argonaut_console_recommend/data_class/switch_game.dart';
+import 'package:console_game_db/data_class/search.dart';
+import 'package:console_game_db/data_class/switch_game.dart';
 
 class SwitchGameListBloc {
   static SearchFilter _searchOptions = SearchFilter();
@@ -35,6 +35,9 @@ class SwitchGameListBloc {
   // 언어 태그 눌렀을때 색 바꿀려고
   static LanguageOptionNotifier languageOptionNotifier =
       LanguageOptionNotifier(_searchOptions);
+  // 콘솔 태그 눌렀을때 색 바꿀려고
+  static ConsoleOptionNotifier consoleOptionNotifier =
+      ConsoleOptionNotifier(_searchOptions);
 
   static late List<SwitchGame> _switchGameList; // 풀리스트
   static List<SwitchGame> _switchGameFilteredList = []; // 필터링 && 정렬된 리스트
