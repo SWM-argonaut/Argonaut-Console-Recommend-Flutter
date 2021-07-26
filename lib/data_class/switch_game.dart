@@ -192,7 +192,7 @@ class Coupang {
 
   Coupang.fromJson(Map<String, dynamic> json) {
     _url = json['url'];
-    _isPartner = json['isPartner'];
+    _isPartner = json['url'].contains("coupa.ng"); // 파트너스 링크는 coup.ng로 시작
     _title = json['title'];
     _rating = json['rating'];
     _ratingCount = json['ratingCount'];

@@ -81,33 +81,55 @@ class _HomeState extends State<Home> with RouteAware {
 AppBar _appBar(BuildContext context) {
   return AppBar(
     elevation: 0.1,
-    backgroundColor: topColor,
-    title: TextField(
-      maxLines: 1,
-      controller: textController,
-      style: TextStyle(color: Colors.white),
-      decoration: InputDecoration(
-          suffixIcon: Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              IconButton(
-                icon: Icon(
-                  Icons.search,
-                  color: Colors.white,
-                ),
-                onPressed: () {
-                  FocusScope.of(context).requestFocus(FocusNode());
-                  AnalyticsBloc.onSearch();
-                },
-              ),
-            ],
+    leadingWidth: 100,
+    leading: Container(
+        alignment: Alignment.center,
+        padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+        child: Text(
+          "게임DB",
+          style: TextStyle(
+              color: Colors.blue, fontSize: 24, fontWeight: FontWeight.bold),
+        )),
+    title: Container(
+        alignment: Alignment.center,
+        height: 40,
+        child: TextField(
+          maxLines: 1,
+          controller: textController,
+          style: TextStyle(
+            color: Colors.black,
           ),
-          border: InputBorder.none,
-          hintText: "타이틀을 검색해주세요",
-          hintStyle: TextStyle(color: Colors.white)),
-    ),
+          textAlign: TextAlign.left,
+          decoration: InputDecoration(
+              filled: true,
+              fillColor: Color.fromRGBO(224, 228, 235, 1),
+              contentPadding: EdgeInsets.fromLTRB(25, 10, 10, 10),
+              suffixIcon: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  IconButton(
+                    icon: Icon(
+                      Icons.search,
+                      color: Colors.black,
+                    ),
+                    onPressed: () {
+                      FocusScope.of(context).requestFocus(FocusNode());
+                      AnalyticsBloc.onSearch();
+                    },
+                  ),
+                ],
+              ),
+              enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(100)),
+                  borderSide: BorderSide(color: Colors.white)),
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(100)),
+                  borderSide: BorderSide(color: Colors.white)),
+              hintText: "어떤 게임이 궁금하세요?",
+              hintStyle: TextStyle(color: Colors.black)),
+        )),
     // centerTitle: true,
   );
 }

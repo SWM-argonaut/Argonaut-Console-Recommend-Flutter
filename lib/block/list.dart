@@ -21,7 +21,6 @@ class SwitchGameListBloc {
 
   static int _updateCount = 0;
   static StreamController<int> update = StreamController<int>.broadcast();
-  static ValueNotifier<bool> iconIsOn = ValueNotifier<bool>(false);
 
   // 필터 옵션 눌렸을때 처리
   static FilterOptionNotifier filterOptionNotifier =
@@ -35,6 +34,12 @@ class SwitchGameListBloc {
   // 언어 태그 눌렀을때 색 바꿀려고
   static LanguageOptionNotifier languageOptionNotifier =
       LanguageOptionNotifier(_searchOptions);
+  // 할인 태그 눌렀을때 색 바꿀려고
+  static DiscountOptionNotifier discountOptionNotifier =
+      DiscountOptionNotifier(_searchOptions);
+  // 판매처 태그 눌렀을때 색 바꿀려고
+  static StoreOptionNotifier storeOptionNotifier =
+      StoreOptionNotifier(_searchOptions);
   // 콘솔 태그 눌렀을때 색 바꿀려고
   static ConsoleOptionNotifier consoleOptionNotifier =
       ConsoleOptionNotifier(_searchOptions);
@@ -78,12 +83,6 @@ class SwitchGameListBloc {
 
     for (SwitchGame item in _switchGameList) {
       if (_searchOptions.checkItem(item)) _switchGameFilteredList.add(item);
-    }
-
-    if (_searchOptions.languages.length + _searchOptions.genres.length == 0) {
-      iconIsOn.value = false;
-    } else {
-      iconIsOn.value = true;
     }
 
     // updateStream을 밑에 함수에서 호출함

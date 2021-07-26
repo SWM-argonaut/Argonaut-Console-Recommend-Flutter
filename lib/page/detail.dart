@@ -68,7 +68,9 @@ class _DetailPageState extends State<DetailPage> with RouteAware {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text("${widget.switchGame?.title}",
-            style: TextStyle(color: Colors.white)),
+            style: TextStyle(
+              color: Colors.black,
+            )),
         centerTitle: true,
       ),
       body: LayoutBuilder(builder: (BuildContext context, constraints) {
@@ -113,22 +115,28 @@ Widget _rating(SwitchGame? switchGame) {
     return Container();
   }
 
-  return Row(children: [
-    Padding(
-        padding: EdgeInsets.all(10),
-        child: RatingBarIndicator(
-          rating: (switchGame?.coupang?.rating ?? 0).toDouble() / 20,
-          itemBuilder: (context, index) => Icon(
-            Icons.star,
-            color: _ratingValueColor,
-          ),
-          itemCount: 5,
-          itemSize: 30.0,
-          unratedColor: _ratingBackgroundColor,
-          direction: Axis.horizontal,
-        )),
-    Text("${switchGame?.coupang?.ratingCount}")
-  ]);
+  return Row(
+    crossAxisAlignment: CrossAxisAlignment.end,
+    children: [
+      Padding(
+          padding: EdgeInsets.only(left: 10, right: 10),
+          child: RatingBarIndicator(
+            rating: (switchGame?.coupang?.rating ?? 0).toDouble() / 20,
+            itemBuilder: (context, index) => Icon(
+              Icons.star,
+              color: _ratingValueColor,
+            ),
+            itemCount: 5,
+            itemSize: 30.0,
+            unratedColor: _ratingBackgroundColor,
+            direction: Axis.horizontal,
+          )),
+      Text(
+        "(${switchGame?.coupang?.ratingCount})",
+        style: TextStyle(fontSize: 13),
+      )
+    ],
+  );
 }
 
 ExpandablePanel _description(SwitchGame? switchGame) {
@@ -157,13 +165,17 @@ ExpandablePanel _description(SwitchGame? switchGame) {
 Container _buy(BuildContext context, SwitchGame? switchGame) {
   List<Widget> _widget = [];
 
-  if (switchGame!.coupang != null) {
+  if (switchGame?.coupang != null) {
     _widget.add(Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Padding(
             padding: EdgeInsets.all(10),
-            child: Text("쿠팡 가격 : ${priceString(switchGame.coupang?.price)}")),
+            child: _priceWidget(
+              price: switchGame!.coupang!.price!,
+              salePrice: switchGame.coupang!.salePrice,
+              shopName: "쿠팡",
+            )),
         Row(children: [
           Container(width: 50, child: Image.asset("assets/images/rocket.png")),
           Padding(
@@ -182,14 +194,17 @@ Container _buy(BuildContext context, SwitchGame? switchGame) {
     ));
   }
 
-  if (switchGame.nintendoStore != null) {
+  if (switchGame?.nintendoStore != null) {
     _widget.add(Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Padding(
             padding: EdgeInsets.all(10),
-            child: Text(
-                "스토어 가격 : ${priceString(switchGame.nintendoStore?.price)}")),
+            child: _priceWidget(
+              price: switchGame!.nintendoStore!.price!,
+              salePrice: switchGame.nintendoStore!.salePrice,
+              shopName: "e샵",
+            )),
         Padding(
             padding: EdgeInsets.all(10),
             child: ElevatedButton(
@@ -214,11 +229,49 @@ Container _buy(BuildContext context, SwitchGame? switchGame) {
 }
 
 Widget _bottomContent(SwitchGame? switchGame) {
-  if (switchGame!.coupang != null && switchGame.coupang?.isPartner == true) {
+  if (switchGame?.coupang != null && switchGame?.coupang?.isPartner == true) {
     return Container(
         alignment: Alignment.bottomCenter,
-        padding: EdgeInsets.only(top: 140),
-        child: Text("이 앱은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다."));
+        padding: EdgeInsets.all(20),
+        child: Text(
+          "해당 앱에서는 쿠팡 파트너스 링크를 통하여 구매 링크를 제공하며, 이에 따라 개발자는 소정의 수수료를 쿠팡으로부터 제공 받을 수 있습니다. 이는 사용자의 구매 가격에 영향을 끼치지 않습니다.",
+          style: TextStyle(fontSize: 12),
+        ));
   }
   return Container();
+}
+
+Widget _priceWidget(
+    {required int price, int? salePrice, required String shopName}) {
+  if (salePrice != null) {
+    int? _discountRate = ((price - salePrice) / price * 100).toInt();
+    return Row(children: [
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "$_discountRate% 할인",
+            style: TextStyle(color: Colors.red),
+          ),
+          Text("$shopName 가격 : "),
+        ],
+      ),
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Text(
+            "${priceString(price)}",
+            style: TextStyle(
+              decoration: TextDecoration.lineThrough,
+              decorationThickness: 3,
+              fontSize: 10,
+            ),
+          ),
+          Text("${priceString(salePrice)}"),
+        ],
+      )
+    ]);
+  } else {
+    return Text("$shopName 가격 : ${priceString(price)}");
+  }
 }

@@ -46,6 +46,8 @@ Container _filterBarBuilder(FilterOptions _filter) {
     _orderBar(),
     _genreBar(),
     _langaugeBar(),
+    _discountBar(),
+    _storeBar(),
     _consoleBar(),
   ].elementAt(_filter.index);
 }
@@ -55,8 +57,8 @@ Container _orderBar() {
   return Container(
     height: 50,
     decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.symmetric(horizontal: BorderSide(color: Colors.grey))),
+      color: Colors.white,
+    ),
     child: ValueListenableBuilder(
         valueListenable: SwitchGameListBloc.switchGameOrderNoti,
         builder: _orderListBuilder),
@@ -69,8 +71,8 @@ Container _genreBar() {
     alignment: Alignment.center,
     padding: EdgeInsets.all(5),
     decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.symmetric(horizontal: BorderSide(color: Colors.grey))),
+      color: Colors.white,
+    ),
     child: ValueListenableBuilder(
         valueListenable: SwitchGameListBloc.genreOptionNotifier,
         builder: _buildGenreChipList),
@@ -83,11 +85,39 @@ Container _langaugeBar() {
     alignment: Alignment.center,
     padding: EdgeInsets.all(5),
     decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.symmetric(horizontal: BorderSide(color: Colors.grey))),
+      color: Colors.white,
+    ),
     child: ValueListenableBuilder(
         valueListenable: SwitchGameListBloc.languageOptionNotifier,
         builder: _buildLanguageChipList),
+  );
+}
+
+Container _discountBar() {
+  return Container(
+    height: 50,
+    alignment: Alignment.center,
+    // padding: EdgeInsets.all(5),
+    decoration: BoxDecoration(
+      color: Colors.white,
+    ),
+    child: ValueListenableBuilder(
+        valueListenable: SwitchGameListBloc.discountOptionNotifier,
+        builder: _buildDiscountChip),
+  );
+}
+
+Container _storeBar() {
+  return Container(
+    height: 50,
+    alignment: Alignment.center,
+    // padding: EdgeInsets.all(5),
+    decoration: BoxDecoration(
+      color: Colors.white,
+    ),
+    child: ValueListenableBuilder(
+        valueListenable: SwitchGameListBloc.storeOptionNotifier,
+        builder: _buildStoreChip),
   );
 }
 
@@ -97,8 +127,8 @@ Container _consoleBar() {
     alignment: Alignment.center,
     // padding: EdgeInsets.all(5),
     decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.symmetric(horizontal: BorderSide(color: Colors.grey))),
+      color: Colors.white,
+    ),
     child: ValueListenableBuilder(
         valueListenable: SwitchGameListBloc.consoleOptionNotifier,
         builder: _buildConsoleChipList),
@@ -148,7 +178,7 @@ GestureDetector _filterListItemBuilder(BuildContext context, int index) {
   );
 }
 
-Center _orderListBuilder(BuildContext context, __, _) {
+Center _orderListBuilder(BuildContext context, SearchFilter filter, _) {
   return Center(
       child: ListView.builder(
     shrinkWrap: true,
@@ -156,14 +186,29 @@ Center _orderListBuilder(BuildContext context, __, _) {
     scrollDirection: Axis.horizontal,
     itemBuilder: (BuildContext context, int index) {
       OrderBy _order = OrderBy.values[index];
-      Color _backgroundColor, _textColor;
+      Color _backgroundColor;
+      Widget _item;
 
       if (SwitchGameListBloc.searchOptions.orderBy == _order) {
         _backgroundColor = Colors.green;
-        _textColor = Colors.white;
+        _item = Row(
+          children: [
+            Text("${orderByName[index]} ",
+                style: TextStyle(
+                  color: Colors.white,
+                )),
+            Icon(
+              filter.asc ? Icons.arrow_upward : Icons.arrow_downward,
+              color: Colors.white,
+            )
+          ],
+        );
       } else {
         _backgroundColor = Colors.transparent;
-        _textColor = Colors.black;
+        _item = Text("${orderByName[index]}",
+            style: TextStyle(
+              color: Colors.black,
+            ));
       }
       return GestureDetector(
         child: Padding(
@@ -172,10 +217,7 @@ Center _orderListBuilder(BuildContext context, __, _) {
                 color: _backgroundColor,
                 alignment: Alignment.center,
                 padding: EdgeInsets.fromLTRB(13, 0, 13, 0),
-                child: Text("${orderByName[index]}",
-                    style: TextStyle(
-                      color: _textColor,
-                    )))),
+                child: _item)),
         onTap: () {
           SwitchGameListBloc.switchGameOrderNoti.clicked(_order);
           SwitchGameListBloc.switchGameSortByOrder();
@@ -216,86 +258,83 @@ Wrap _buildGenreChipList(BuildContext context, SearchFilter options, _) {
   );
 }
 
-ActionChip _buildConsoleChip(Console _console, SearchFilter options) {
-  Color _color = Colors.orange;
-  bool _selected = false;
-  if (options.console == _console) {
-    _color = Colors.green;
-    _selected = true;
-  }
-
+ActionChip _buildChip({
+  required bool isSelected,
+  required String text,
+  required void Function() onPressed,
+  Color backgroundColor = Colors.orange,
+  Color selectedBackgroundColor = Colors.green,
+}) {
   return ActionChip(
     elevation: 6.0,
-    backgroundColor: _color,
+    backgroundColor: isSelected ? selectedBackgroundColor : backgroundColor,
     padding: EdgeInsets.all(2.0),
     shadowColor: Colors.grey[60],
     label: Text(
-      consoleName[_console.index],
+      text,
       style: TextStyle(
         color: Colors.white,
       ),
     ),
+    onPressed: onPressed,
+  );
+}
+
+ActionChip _buildConsoleChip(Console _console, SearchFilter options) {
+  return _buildChip(
+    isSelected: options.console == _console,
+    text: consoleName[_console.index],
     onPressed: () {
-      if (!_selected) {
-        SwitchGameListBloc.consoleOptionNotifier.clicked(_console);
-      }
-      // TODO 정렬
+      SwitchGameListBloc.consoleOptionNotifier.clicked(_console);
     },
   );
 }
 
-ActionChip _buildLanguageChip(Language _language, SearchFilter options) {
-  Color _color = Colors.orange;
-  bool _selected = false;
-  if (options.languages.contains(_language)) {
-    _color = Colors.green;
-    _selected = true;
-  }
-
-  return ActionChip(
-    elevation: 6.0,
-    backgroundColor: _color,
-    padding: EdgeInsets.all(2.0),
-    shadowColor: Colors.grey[60],
-    label: Text(
-      languageName[_language.index],
-      style: TextStyle(
-        color: Colors.white,
-      ),
-    ),
+ActionChip _buildDiscountChip(BuildContext context, SearchFilter options, _) {
+  return _buildChip(
+    isSelected: options.onDiscount,
+    text: "할인중인 제품만 보기",
     onPressed: () {
-      if (_selected) {
-        SwitchGameListBloc.languageOptionNotifier.removeLanguage(_language);
-      } else {
-        SwitchGameListBloc.languageOptionNotifier.addLanguage(_language);
-      }
-      log(options.languages.toString());
+      SwitchGameListBloc.discountOptionNotifier.clicked();
       SwitchGameListBloc.switchGameFilter();
     },
   );
 }
 
-ActionChip _buildGenreChip(Genre _genre, SearchFilter options) {
-  Color _color = Colors.orange;
-  bool _selected = false;
-  if (options.genres.contains(_genre)) {
-    _color = Colors.green;
-    _selected = true;
-  }
-
-  return ActionChip(
-    elevation: 6.0,
-    backgroundColor: _color,
-    padding: EdgeInsets.all(2.0),
-    shadowColor: Colors.grey[60],
-    label: Text(
-      genreName[_genre.index],
-      style: TextStyle(
-        color: Colors.white,
-      ),
-    ),
+ActionChip _buildStoreChip(BuildContext context, SearchFilter options, _) {
+  return _buildChip(
+    isSelected: options.hasCoupang,
+    text: "쿠팡",
     onPressed: () {
-      if (_selected) {
+      SwitchGameListBloc.storeOptionNotifier.clicked();
+      SwitchGameListBloc.switchGameFilter();
+    },
+  );
+}
+
+ActionChip _buildLanguageChip(Language _language, SearchFilter options) {
+  bool _isSelected = options.languages.contains(_language);
+  return _buildChip(
+      isSelected: _isSelected,
+      text: languageName[_language.index],
+      onPressed: () {
+        if (_isSelected) {
+          SwitchGameListBloc.languageOptionNotifier.removeLanguage(_language);
+        } else {
+          SwitchGameListBloc.languageOptionNotifier.addLanguage(_language);
+        }
+        log(options.languages.toString());
+        SwitchGameListBloc.switchGameFilter();
+      });
+}
+
+ActionChip _buildGenreChip(Genre _genre, SearchFilter options) {
+  bool _isSelected = options.genres.contains(_genre);
+  return _buildChip(
+    isSelected: _isSelected,
+    text: genreName[_genre.index],
+    onPressed: () {
+      if (_isSelected) {
         SwitchGameListBloc.genreOptionNotifier.removeGenre(_genre);
       } else {
         SwitchGameListBloc.genreOptionNotifier.addGenre(_genre);

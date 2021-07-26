@@ -50,8 +50,10 @@ class _MyAppState extends State<MyApp> {
         navigatorObservers: [AnalyticsBloc.observer],
         theme: new ThemeData(
             fontFamily: 'NEXONLv1Gothic',
-            primaryColor: topColor,
+            appBarTheme: AppBarTheme(color: Colors.white),
+            primaryColor: Colors.white,
             scaffoldBackgroundColor: Colors.white,
+            backgroundColor: Colors.white,
             bottomNavigationBarTheme: BottomNavigationBarThemeData(
                 selectedItemColor: Colors.white,
                 unselectedItemColor: Colors.black)),

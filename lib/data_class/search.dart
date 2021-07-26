@@ -96,12 +96,16 @@ enum FilterOptions {
   ORDER,
   GENRE,
   LANGUAGE,
+  DISCOUNT,
+  STORE,
   CONSOLE,
 }
 const List<String> filterOptionsName = [
   '정렬',
   '장르',
   '언어',
+  '할인',
+  '판매처',
   '콘솔',
 ];
 
@@ -113,10 +117,14 @@ class SearchFilter {
   String searchText = "";
   String searchTextLowerCase = "";
   bool _asc = false; // ASC, DESC
+  bool _onDiscount = false;
+  bool _hasCoupang = false;
   OrderBy _orderBy = OrderBy.RELEASEDATE;
   Console _console = Console.SWITCH;
 
   bool get asc => _asc;
+  bool get onDiscount => _onDiscount;
+  bool get hasCoupang => _hasCoupang;
   OrderBy get orderBy => _orderBy;
   Set<Genre> get genres => _genres;
   Set<Language> get languages => _languages;
@@ -148,7 +156,28 @@ class SearchFilter {
     _console = item;
   }
 
+  void setOnDiscount(bool item) {
+    _onDiscount = item;
+  }
+
+  void sethasCoupang(bool item) {
+    _hasCoupang = item;
+  }
+
   bool checkItem(SwitchGame? item) {
+    if (_onDiscount) {
+      if (item?.coupang?.salePrice == null &&
+          item?.nintendoStore?.salePrice == null) {
+        return false;
+      }
+    }
+
+    if (_hasCoupang) {
+      if (item?.coupang == null) {
+        return false;
+      }
+    }
+
     if (item!.languages!.containsAll(_languages) == false) {
       return false;
     }
@@ -162,6 +191,18 @@ class SearchFilter {
     }
 
     return true;
+  }
+
+  void clear() {
+    _genres.clear();
+    _languages.clear();
+    searchText = "";
+    searchTextLowerCase = "";
+    _asc = false; // ASC, DESC
+    _onDiscount = false;
+    _hasCoupang = false;
+    _orderBy = OrderBy.RELEASEDATE;
+    _console = Console.SWITCH;
   }
 }
 
@@ -220,6 +261,24 @@ class LanguageOptionNotifier extends ValueNotifier<SearchFilter> {
 
   void clearLanguage(Language language) {
     value.clearLanguage();
+    notifyListeners();
+  }
+}
+
+class DiscountOptionNotifier extends ValueNotifier<SearchFilter> {
+  DiscountOptionNotifier(SearchFilter value) : super(value);
+
+  void clicked() {
+    value.setOnDiscount(!value.onDiscount);
+    notifyListeners();
+  }
+}
+
+class StoreOptionNotifier extends ValueNotifier<SearchFilter> {
+  StoreOptionNotifier(SearchFilter value) : super(value);
+
+  void clicked() {
+    value.sethasCoupang(!value.hasCoupang);
     notifyListeners();
   }
 }
