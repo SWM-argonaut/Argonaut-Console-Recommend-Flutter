@@ -152,6 +152,11 @@ class SearchFilter {
     }
   }
 
+  void clearOrder() {
+    _orderBy = OrderBy.RELEASEDATE;
+    _asc = false;
+  }
+
   void setConsle(Console item) {
     _console = item;
   }
@@ -192,18 +197,6 @@ class SearchFilter {
 
     return true;
   }
-
-  void clear() {
-    _genres.clear();
-    _languages.clear();
-    searchText = "";
-    searchTextLowerCase = "";
-    _asc = false; // ASC, DESC
-    _onDiscount = false;
-    _hasCoupang = false;
-    _orderBy = OrderBy.RELEASEDATE;
-    _console = Console.SWITCH;
-  }
 }
 
 // 정렬만
@@ -224,23 +217,28 @@ class ItemOrderNotifier extends ValueNotifier<SearchFilter> {
     value.orderClicked(_order);
     notifyListeners();
   }
+
+  void clear() {
+    value.clearOrder();
+    notifyListeners();
+  }
 }
 
 // 장르
 class GenreOptionNotifier extends ValueNotifier<SearchFilter> {
   GenreOptionNotifier(SearchFilter value) : super(value);
 
-  void addGenre(Genre genre) {
+  void add(Genre genre) {
     value.addGenre(genre);
     notifyListeners();
   }
 
-  void removeGenre(Genre genre) {
+  void remove(Genre genre) {
     value.removeGenre(genre);
     notifyListeners();
   }
 
-  void clearGenre(Genre genre) {
+  void clear() {
     value.clearGenre();
     notifyListeners();
   }
@@ -249,17 +247,17 @@ class GenreOptionNotifier extends ValueNotifier<SearchFilter> {
 class LanguageOptionNotifier extends ValueNotifier<SearchFilter> {
   LanguageOptionNotifier(SearchFilter value) : super(value);
 
-  void addLanguage(Language language) {
+  void add(Language language) {
     value.addLanguage(language);
     notifyListeners();
   }
 
-  void removeLanguage(Language language) {
+  void remove(Language language) {
     value.removeLanguage(language);
     notifyListeners();
   }
 
-  void clearLanguage(Language language) {
+  void clear() {
     value.clearLanguage();
     notifyListeners();
   }
@@ -272,6 +270,11 @@ class DiscountOptionNotifier extends ValueNotifier<SearchFilter> {
     value.setOnDiscount(!value.onDiscount);
     notifyListeners();
   }
+
+  void clear() {
+    value.setOnDiscount(false);
+    notifyListeners();
+  }
 }
 
 class StoreOptionNotifier extends ValueNotifier<SearchFilter> {
@@ -281,6 +284,11 @@ class StoreOptionNotifier extends ValueNotifier<SearchFilter> {
     value.sethasCoupang(!value.hasCoupang);
     notifyListeners();
   }
+
+  void clear() {
+    value.sethasCoupang(false);
+    notifyListeners();
+  }
 }
 
 class ConsoleOptionNotifier extends ValueNotifier<SearchFilter> {
@@ -288,6 +296,11 @@ class ConsoleOptionNotifier extends ValueNotifier<SearchFilter> {
 
   void clicked(Console _console) {
     value.setConsle(_console);
+    notifyListeners();
+  }
+
+  void clear() {
+    value.setConsle(Console.SWITCH);
     notifyListeners();
   }
 }

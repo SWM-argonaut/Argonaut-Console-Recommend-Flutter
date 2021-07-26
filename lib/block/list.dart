@@ -77,6 +77,16 @@ class SwitchGameListBloc {
     return true;
   }
 
+  static void clear() {
+    switchGameOrderNoti.clear();
+    genreOptionNotifier.clear();
+    languageOptionNotifier.clear();
+    discountOptionNotifier.clear();
+    storeOptionNotifier.clear();
+    consoleOptionNotifier.clear();
+    switchGameFilter();
+  }
+
   // 텍스트, 옵션을 가지고 필터링하고 나중에 정렬도
   static void switchGameFilter() {
     _switchGameFilteredList = [];

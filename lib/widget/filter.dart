@@ -9,6 +9,8 @@ import 'package:console_game_db/block/list.dart' show SwitchGameListBloc;
 import 'package:console_game_db/data_class/search.dart';
 import 'package:flutter/rendering.dart';
 
+final ValueNotifier<bool> _isExpandedNotifier = ValueNotifier<bool>(false);
+
 class SearchFilterBar extends StatefulWidget {
   const SearchFilterBar({Key? key}) : super(key: key);
 
@@ -27,18 +29,39 @@ class SearchFilterState extends State<SearchFilterBar> {
   }
 }
 
-Widget _searchFilterBuilder(
+ValueListenableBuilder _searchFilterBuilder(
     BuildContext context, SearchFilter _searchFilter, _) {
-  if (_searchFilter.filterOptions == null) {
-    return _filterListBuilder(context);
-  }
+  return ValueListenableBuilder<bool>(
+      valueListenable: _isExpandedNotifier,
+      builder: (BuildContext context, bool _isExpanded, _) {
+        List<Widget> _arr = [_filterListBuilder(context)];
 
-  return Column(
-    children: [
-      _filterListBuilder(context),
-      _filterBarBuilder(_searchFilter.filterOptions!),
-    ],
-  );
+        if (_searchFilter.filterOptions != null) {
+          _arr.add(_filterBarBuilder(_searchFilter.filterOptions!));
+        }
+
+        if (_isExpanded) {
+          _arr.add(Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Padding(
+                  padding: EdgeInsets.only(left: 20),
+                  child: ElevatedButton(
+                      onPressed: SwitchGameListBloc.clear, child: Text("초기화"))),
+              IconButton(
+                  icon: Icon(Icons.arrow_drop_up, size: 32),
+                  padding: EdgeInsets.only(right: 20),
+                  onPressed: () {
+                    _isExpandedNotifier.value = false;
+                  })
+            ],
+          ));
+        }
+
+        return Column(
+          children: _arr,
+        );
+      });
 }
 
 Container _filterBarBuilder(FilterOptions _filter) {
@@ -135,18 +158,47 @@ Container _consoleBar() {
   );
 }
 
-Container _filterListBuilder(BuildContext context) {
-  return Container(
-    height: 50,
-    width: MediaQuery.of(context).size.width,
-    alignment: Alignment.center,
-    color: Colors.white,
-    child: ListView.builder(
-        shrinkWrap: true,
-        scrollDirection: Axis.horizontal,
-        itemCount: filterOptionsName.length,
-        itemBuilder: _filterListItemBuilder),
-  );
+ValueListenableBuilder _filterListBuilder(BuildContext context) {
+  return ValueListenableBuilder<bool>(
+      valueListenable: _isExpandedNotifier,
+      builder: (BuildContext context, bool _isExpanded, _) {
+        if (!_isExpanded) {
+          return Row(children: [
+            Container(
+              height: 50,
+              width: MediaQuery.of(context).size.width - 60,
+              alignment: Alignment.center,
+              color: Colors.white,
+              child: ListView.builder(
+                  shrinkWrap: true,
+                  scrollDirection: Axis.horizontal,
+                  itemCount: filterOptionsName.length,
+                  itemBuilder: _filterListItemBuilder),
+            ),
+            IconButton(
+              icon: Icon(Icons.arrow_drop_down, size: 32),
+              onPressed: () {
+                _isExpandedNotifier.value = true;
+              },
+            )
+          ]);
+        } else {
+          return Container(
+            alignment: Alignment.center,
+            color: Colors.white,
+            child: GridView.builder(
+              shrinkWrap: true,
+              scrollDirection: Axis.vertical,
+              physics: NeverScrollableScrollPhysics(),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: MediaQuery.of(context).size.width / 100),
+              itemCount: filterOptionsName.length,
+              itemBuilder: _filterListItemBuilder,
+            ),
+          );
+        }
+      });
 }
 
 GestureDetector _filterListItemBuilder(BuildContext context, int index) {
@@ -319,9 +371,9 @@ ActionChip _buildLanguageChip(Language _language, SearchFilter options) {
       text: languageName[_language.index],
       onPressed: () {
         if (_isSelected) {
-          SwitchGameListBloc.languageOptionNotifier.removeLanguage(_language);
+          SwitchGameListBloc.languageOptionNotifier.remove(_language);
         } else {
-          SwitchGameListBloc.languageOptionNotifier.addLanguage(_language);
+          SwitchGameListBloc.languageOptionNotifier.add(_language);
         }
         log(options.languages.toString());
         SwitchGameListBloc.switchGameFilter();
@@ -335,9 +387,9 @@ ActionChip _buildGenreChip(Genre _genre, SearchFilter options) {
     text: genreName[_genre.index],
     onPressed: () {
       if (_isSelected) {
-        SwitchGameListBloc.genreOptionNotifier.removeGenre(_genre);
+        SwitchGameListBloc.genreOptionNotifier.remove(_genre);
       } else {
-        SwitchGameListBloc.genreOptionNotifier.addGenre(_genre);
+        SwitchGameListBloc.genreOptionNotifier.add(_genre);
       }
       log(options.genres.toString());
       SwitchGameListBloc.switchGameFilter();
