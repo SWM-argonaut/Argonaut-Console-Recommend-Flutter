@@ -20,6 +20,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(const MyApp());
+  AnalyticsBloc.init();
 }
 
 // TODO 강제 업데이트 : https://bebesoft.tistory.com/45
@@ -66,7 +67,7 @@ class _MyAppState extends State<MyApp> {
     //Remove this method to stop OneSignal Debugging
     OneSignal.shared.setLogLevel(OSLogLevel.verbose, OSLogLevel.none);
 
-    OneSignal.shared.setAppId(OnesiganlAppId);
+    OneSignal.shared.setAppId(onesiganlAppId);
 
     // The promptForPushNotificationsWithUserResponse function will show the iOS push notification prompt. We recommend removing the following code and instead using an In-App Message to prompt for notification permission
     OneSignal.shared.promptUserForPushNotificationPermission().then((accepted) {

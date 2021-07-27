@@ -86,7 +86,7 @@ AppBar _appBar(BuildContext context) {
         alignment: Alignment.center,
         padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
         child: Text(
-          "게임DB",
+          "콘솔DB",
           style: TextStyle(
               color: Colors.blue, fontSize: 24, fontWeight: FontWeight.bold),
         )),

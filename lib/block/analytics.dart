@@ -1,16 +1,36 @@
 import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 
+import 'package:mixpanel_flutter/mixpanel_flutter.dart';
+
+import 'package:console_game_db/configs.dart';
+
 import 'package:console_game_db/block/list.dart' show SwitchGameListBloc;
 
 class AnalyticsBloc {
-  static FirebaseAnalytics analytics = FirebaseAnalytics();
+  // firebase
+  static FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics();
   static FirebaseAnalyticsObserver observer =
-      FirebaseAnalyticsObserver(analytics: analytics);
+      FirebaseAnalyticsObserver(analytics: firebaseAnalytics);
+  // mixpanel
+  static late Mixpanel mixpanel;
+
+  static void init() async {
+    mixpanel = await Mixpanel.init(
+      mixpanelToken,
+      optOutTrackingDefault: false,
+    );
+  }
+
+  static _logger({required String name, required Map<String, dynamic> param}) {
+    // firebase
+    firebaseAnalytics.logEvent(name: name, parameters: param);
+    // mixpanel
+    mixpanel.track(name, properties: param);
+  }
 
   static onChangeOrder() {
-    AnalyticsBloc.analytics
-        .logEvent(name: "order", parameters: <String, dynamic>{
+    _logger(name: "orrder", param: <String, dynamic>{
       "search_order_by":
           SwitchGameListBloc.searchOptions.orderBy.toString().split('.').last,
       "search_order": SwitchGameListBloc.searchOptions.asc ? "ASC" : "DESC",
@@ -19,8 +39,7 @@ class AnalyticsBloc {
 
   static onSearch() {
     if (SwitchGameListBloc.searchOptions.searchText != "") {
-      AnalyticsBloc.analytics
-          .logEvent(name: "game_search", parameters: <String, dynamic>{
+      _logger(name: "game_search", param: <String, dynamic>{
         "search_text": SwitchGameListBloc.searchOptions.searchText,
         "search_genres": SwitchGameListBloc.searchOptions.genres
             .toString()
@@ -36,8 +55,7 @@ class AnalyticsBloc {
   }
 
   static onDetail(String? idx, String? title) {
-    AnalyticsBloc.analytics
-        .logEvent(name: "detail", parameters: <String, dynamic>{
+    _logger(name: "detail", param: <String, dynamic>{
       "search_text": SwitchGameListBloc.searchOptions.searchText,
       "search_genres": SwitchGameListBloc.searchOptions.genres
           .toString()
@@ -54,7 +72,7 @@ class AnalyticsBloc {
   }
 
   static onCoupang(String? idx, String? title) {
-    analytics.logEvent(name: "store_opened", parameters: <String, dynamic>{
+    _logger(name: "store_opened", param: <String, dynamic>{
       "store": "coupang",
       "idx": "$idx",
       "title": "$title",
@@ -62,7 +80,7 @@ class AnalyticsBloc {
   }
 
   static onNintendoStore(String? idx, String? title) {
-    analytics.logEvent(name: "store_opened", parameters: <String, dynamic>{
+    _logger(name: "store_opened", param: <String, dynamic>{
       "store": "nintendo_store",
       "idx": "$idx",
       "title": "$title",
