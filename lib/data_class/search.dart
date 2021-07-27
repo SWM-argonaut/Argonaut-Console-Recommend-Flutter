@@ -143,6 +143,10 @@ class SearchFilter {
     _filterOptions = _filterOptions != item ? item : null;
   }
 
+  void clearFilterOption() {
+    _filterOptions = null;
+  }
+
   void orderClicked(OrderBy item) {
     if (item == _orderBy) {
       // if selected already, change just order

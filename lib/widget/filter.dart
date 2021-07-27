@@ -47,11 +47,15 @@ ValueListenableBuilder _searchFilterBuilder(
               Padding(
                   padding: EdgeInsets.only(left: 20),
                   child: ElevatedButton(
-                      onPressed: SwitchGameListBloc.clear, child: Text("초기화"))),
+                    onPressed: SwitchGameListBloc.clear,
+                    child: Text("필터 초기화"),
+                    style: ElevatedButton.styleFrom(primary: Colors.blue),
+                  )),
               IconButton(
                   icon: Icon(Icons.arrow_drop_up, size: 32),
                   padding: EdgeInsets.only(right: 20),
                   onPressed: () {
+                    SwitchGameListBloc.searchOptions.clearFilterOption();
                     _isExpandedNotifier.value = false;
                   })
             ],
@@ -98,7 +102,7 @@ Container _genreBar() {
     ),
     child: ValueListenableBuilder(
         valueListenable: SwitchGameListBloc.genreOptionNotifier,
-        builder: _buildGenreChipList),
+        builder: _buildGenreChipWrap),
   );
 }
 
@@ -112,7 +116,7 @@ Container _langaugeBar() {
     ),
     child: ValueListenableBuilder(
         valueListenable: SwitchGameListBloc.languageOptionNotifier,
-        builder: _buildLanguageChipList),
+        builder: _buildLanguageChipWrap),
   );
 }
 
@@ -154,7 +158,7 @@ Container _consoleBar() {
     ),
     child: ValueListenableBuilder(
         valueListenable: SwitchGameListBloc.consoleOptionNotifier,
-        builder: _buildConsoleChipList),
+        builder: _buildConsoleChipWrap),
   );
 }
 
@@ -186,9 +190,9 @@ ValueListenableBuilder _filterListBuilder(BuildContext context) {
           return Container(
             alignment: Alignment.center,
             color: Colors.white,
+            padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
             child: GridView.builder(
               shrinkWrap: true,
-              scrollDirection: Axis.vertical,
               physics: NeverScrollableScrollPhysics(),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
@@ -214,16 +218,18 @@ GestureDetector _filterListItemBuilder(BuildContext context, int index) {
   }
 
   return GestureDetector(
-    child: Padding(
-        padding: EdgeInsets.fromLTRB(2, 8, 2, 8),
-        child: Container(
-            color: _backgroundColor,
-            alignment: Alignment.center,
-            padding: EdgeInsets.fromLTRB(13, 0, 13, 0),
-            child: Text("${filterOptionsName[index]}",
-                style: TextStyle(
-                  color: _textColor,
-                )))),
+    child: Row(children: [
+      Padding(
+          padding: EdgeInsets.fromLTRB(2, 8, 2, 8),
+          child: Container(
+              color: _backgroundColor,
+              alignment: Alignment.center,
+              padding: EdgeInsets.fromLTRB(13, 0, 13, 0),
+              child: Text("${filterOptionsName[index]}",
+                  style: TextStyle(
+                    color: _textColor,
+                  ))))
+    ]),
     onTap: () {
       SwitchGameListBloc.filterOptionNotifier.clicked(_filterOptions);
     },
@@ -280,34 +286,32 @@ Center _orderListBuilder(BuildContext context, SearchFilter filter, _) {
   ));
 }
 
-Wrap _buildConsoleChipList(BuildContext context, SearchFilter options, _) {
-  return Wrap(
-    spacing: 6.0,
-    runSpacing: 6.0,
-    children: Console.values.map((console) {
-      return _buildConsoleChip(console, options);
-    }).toList(),
-  );
+Padding _buildChipWrap(List<Widget> _children) {
+  return Padding(
+      padding: EdgeInsets.only(left: 10, right: 10),
+      child: Wrap(
+        spacing: 6.0,
+        runSpacing: 6.0,
+        children: _children,
+      ));
 }
 
-Wrap _buildLanguageChipList(BuildContext context, SearchFilter options, _) {
-  return Wrap(
-    spacing: 6.0,
-    runSpacing: 6.0,
-    children: Language.values.map((language) {
-      return _buildLanguageChip(language, options);
-    }).toList(),
-  );
+Padding _buildConsoleChipWrap(BuildContext context, SearchFilter options, _) {
+  return _buildChipWrap(Console.values.map((console) {
+    return _buildConsoleChip(console, options);
+  }).toList());
 }
 
-Wrap _buildGenreChipList(BuildContext context, SearchFilter options, _) {
-  return Wrap(
-    spacing: 6.0,
-    runSpacing: 6.0,
-    children: Genre.values.map((genre) {
-      return _buildGenreChip(genre, options);
-    }).toList(),
-  );
+Padding _buildLanguageChipWrap(BuildContext context, SearchFilter options, _) {
+  return _buildChipWrap(Language.values.map((language) {
+    return _buildLanguageChip(language, options);
+  }).toList());
+}
+
+Padding _buildGenreChipWrap(BuildContext context, SearchFilter options, _) {
+  return _buildChipWrap(Genre.values.map((genre) {
+    return _buildGenreChip(genre, options);
+  }).toList());
 }
 
 ActionChip _buildChip({
@@ -320,7 +324,7 @@ ActionChip _buildChip({
   return ActionChip(
     elevation: 6.0,
     backgroundColor: isSelected ? selectedBackgroundColor : backgroundColor,
-    padding: EdgeInsets.all(2.0),
+    padding: EdgeInsets.all(2),
     shadowColor: Colors.grey[60],
     label: Text(
       text,

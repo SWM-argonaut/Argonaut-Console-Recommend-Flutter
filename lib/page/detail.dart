@@ -4,12 +4,15 @@ import 'package:flutter/material.dart';
 
 import 'package:firebase_analytics/firebase_analytics.dart';
 
+import 'package:intl/intl.dart';
 import 'package:expandable/expandable.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 import 'package:console_game_db/block/list.dart' show SwitchGameListBloc;
 import 'package:console_game_db/block/analytics.dart' show AnalyticsBloc;
+
+import 'package:console_game_db/data_class/search.dart';
 
 import 'package:console_game_db/functions/number.dart';
 
@@ -100,8 +103,9 @@ Container _content(BuildContext context, SwitchGame? switchGame) {
     child: Column(
       children: <Widget>[
         _rating(switchGame),
+        _info(switchGame),
         _description(switchGame),
-        _buy(context, switchGame),
+        _links(context, switchGame),
       ],
     ),
   );
@@ -139,12 +143,34 @@ Widget _rating(SwitchGame? switchGame) {
   );
 }
 
+ExpandablePanel _info(SwitchGame? switchGame) {
+  return ExpandablePanel(
+    header: Padding(
+        padding: EdgeInsets.all(12),
+        child: Text(
+          "게임 정보",
+          style: TextStyle(color: Colors.black, fontSize: 15),
+        )),
+    collapsed: Container(),
+    expanded: Text(
+      '''
+출시일 : ${DateFormat('yyyy년 MM월 dd일').format(switchGame!.releaseDate!)}
+장  르 : ${switchGame.genres?.map((e) => genreName[e.index])}
+언  어 : ${switchGame.languages?.map((e) => languageName[e.index])}
+플레이 인원수 : ${switchGame.playerCount}
+      ''',
+      softWrap: true,
+      style: TextStyle(color: Colors.black),
+    ),
+  );
+}
+
 ExpandablePanel _description(SwitchGame? switchGame) {
   return ExpandablePanel(
     header: Padding(
         padding: EdgeInsets.all(12),
         child: Text(
-          "상세 설명",
+          "게임 소개",
           style: TextStyle(color: Colors.black, fontSize: 15),
         )),
     collapsed: Text(
@@ -162,8 +188,8 @@ ExpandablePanel _description(SwitchGame? switchGame) {
   );
 }
 
-Container _buy(BuildContext context, SwitchGame? switchGame) {
-  List<Widget> _widget = [];
+Container _links(BuildContext context, SwitchGame? switchGame) {
+  List<Widget> _widget = [Padding(padding: EdgeInsets.all(15))];
 
   if (switchGame?.coupang != null) {
     _widget.add(Row(
@@ -183,7 +209,7 @@ Container _buy(BuildContext context, SwitchGame? switchGame) {
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                     primary: Color.fromRGBO(66, 133, 244, 1.0)),
-                child: Text("쿠팡에서 구매", style: TextStyle(color: Colors.white)),
+                child: Text("쿠팡 링크", style: TextStyle(color: Colors.white)),
                 onPressed: () {
                   AnalyticsBloc.onCoupang(switchGame.idx, switchGame.title);
                   _launchURL("${switchGame.coupang?.url}");
@@ -210,7 +236,7 @@ Container _buy(BuildContext context, SwitchGame? switchGame) {
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                   primary: Color.fromRGBO(230, 0, 17, 1.0)),
-              child: Text("e샵에서 구매", style: TextStyle(color: Colors.white)),
+              child: Text("e샵 링크", style: TextStyle(color: Colors.white)),
               onPressed: () {
                 AnalyticsBloc.onNintendoStore(switchGame.idx, switchGame.title);
                 _launchURL("${switchGame.nintendoStore?.url}");
