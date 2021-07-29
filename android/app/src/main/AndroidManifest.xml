@@ -4,6 +4,10 @@
    <application
         android:label="콘솔 게임 DB"
         android:icon="@mipmap/launcher_icon">
+        <!-- Sample AdMob App ID: ca-app-pub-3940256099942544~3347511713 -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-4296117019202334~5131175356"/>
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

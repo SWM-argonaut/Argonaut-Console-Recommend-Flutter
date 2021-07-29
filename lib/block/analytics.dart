@@ -30,7 +30,7 @@ class AnalyticsBloc {
   }
 
   static onChangeOrder() {
-    _logger(name: "orrder", param: <String, dynamic>{
+    _logger(name: "order", param: <String, dynamic>{
       "search_order_by":
           SwitchGameListBloc.searchOptions.orderBy.toString().split('.').last,
       "search_order": SwitchGameListBloc.searchOptions.asc ? "ASC" : "DESC",

@@ -17,7 +17,7 @@ import 'package:console_game_db/data_class/switch_game.dart';
 
 class SwitchGameListBloc {
   static SearchFilter _searchOptions = SearchFilter();
-  static bool _init = false;
+  static late Future<bool> _init;
 
   static int _updateCount = 0;
   static StreamController<int> update = StreamController<int>.broadcast();
@@ -47,7 +47,7 @@ class SwitchGameListBloc {
   static late List<SwitchGame> _switchGameList; // 풀리스트
   static List<SwitchGame> _switchGameFilteredList = []; // 필터링 && 정렬된 리스트
 
-  static bool get init => _init;
+  static Future<bool> get init => _init;
   static SearchFilter get searchOptions => _searchOptions;
   static int get itemCount => _switchGameList.length; // 전체 아이템
   static int get filteredItemCount =>
@@ -69,12 +69,13 @@ class SwitchGameListBloc {
   }
 
   // 처음 리스트 초기화
-  static Future<bool> initGameList() async {
-    _switchGameList = await getSwitchGameList();
-    _switchGameFilteredList = List<SwitchGame>.from(_switchGameList);
+  static void initGameList() {
+    _init = Future<bool>(() async {
+      _switchGameList = await getSwitchGameList();
+      _switchGameFilteredList = List<SwitchGame>.from(_switchGameList);
 
-    _init = true;
-    return true;
+      return true;
+    });
   }
 
   static void clear() {

@@ -1,14 +1,19 @@
+// TODO IOS 설정 안해둠
+
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'package:localstorage/localstorage.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 import 'package:console_game_db/configs.dart';
 
+import 'package:console_game_db/widget/ads.dart' show AdsBloc;
 import 'package:console_game_db/block/analytics.dart' show AnalyticsBloc;
 
 import 'package:console_game_db/data_class/notificationItem.dart';
@@ -16,11 +21,14 @@ import 'package:console_game_db/data_class/notificationItem.dart';
 import 'package:console_game_db/page/home.dart';
 import 'package:console_game_db/page/notification/notification_detail.dart';
 
+// TODO IOS에서 화면 회전 안되도록 해야됨
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   await Firebase.initializeApp();
-  runApp(const MyApp());
+  AdsBloc.init();
   AnalyticsBloc.init();
+  runApp(const MyApp());
 }
 
 // TODO 강제 업데이트 : https://bebesoft.tistory.com/45
@@ -41,6 +49,11 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     initOneSignal();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override

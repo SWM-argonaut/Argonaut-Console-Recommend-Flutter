@@ -2,6 +2,9 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:http/retry.dart';
+
 import 'package:keyboard_utils/widgets.dart';
 import 'package:keyboard_utils/keyboard_options.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -17,12 +20,13 @@ import 'package:console_game_db/functions/number.dart';
 import 'package:console_game_db/data_class/search.dart';
 import 'package:console_game_db/data_class/switch_game.dart';
 
+import 'package:console_game_db/widget/ads.dart';
 import 'package:console_game_db/widget/filter.dart';
+import 'package:console_game_db/widget/game_list.dart';
 
 import 'package:console_game_db/page/detail.dart';
 import 'package:console_game_db/page/notification/notification_list.dart';
 
-late Future<bool> _switchGameListInit;
 late TextEditingController textController;
 
 class Home extends StatefulWidget {
@@ -38,7 +42,7 @@ class _HomeState extends State<Home> with RouteAware {
   @override
   void initState() {
     super.initState();
-    _switchGameListInit = SwitchGameListBloc.initGameList();
+    SwitchGameListBloc.initGameList();
     textController = SwitchGameListBloc.textController();
   }
 
@@ -134,28 +138,46 @@ AppBar _appBar(BuildContext context) {
   );
 }
 
-LayoutBuilder _home() {
-  return LayoutBuilder(
-      builder: (BuildContext context, BoxConstraints constraints) {
-    return Column(children: [
-      SearchFilterBar(),
-      _buildList(constraints.maxHeight),
-    ]);
-  });
+Stack _home() {
+  return Stack(
+    children: [
+      LayoutBuilder(
+          builder: (BuildContext context, BoxConstraints constraints) {
+        return Column(children: [
+          SearchFilterBar(),
+          GameListWidget(height: constraints.maxHeight),
+        ]);
+      }),
+      Positioned(
+          bottom: 0,
+          child: BannerAdWidget(
+            bannerAdUnitId: bottomBannerAdUnitId,
+          ))
+    ],
+  );
 }
 
 _buildList(double _height) {
   return Container(
       height: _height - 60,
       child: FutureBuilder(
-          future: _switchGameListInit,
+          future: SwitchGameListBloc.init,
           builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
             if (snapshot.connectionState != ConnectionState.done) {
               return Center(child: CircularProgressIndicator());
             } else {
               if (snapshot.hasError) {
                 // TODO 에러 처리
-                return Center(child: Text("Something went wrong..."));
+                return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Center(child: Text("서버와 통신이 되지 않습니다...")),
+                      IconButton(
+                          onPressed: () {
+                            SwitchGameListBloc.initGameList();
+                          },
+                          icon: Icon(Icons.restart_alt))
+                    ]);
               }
               if (snapshot.data! == false) {
                 return Center(child: CircularProgressIndicator());
@@ -167,8 +189,10 @@ _buildList(double _height) {
                   stream: SwitchGameListBloc.update.stream,
                   builder: (BuildContext context, AsyncSnapshot snapshot) {
                     return ListView.builder(
-                      scrollDirection: Axis.vertical,
                       shrinkWrap: true,
+                      scrollDirection: Axis.vertical,
+                      physics: BouncingScrollPhysics(),
+                      padding: EdgeInsets.only(bottom: 100),
                       itemCount: SwitchGameListBloc.filteredItemCount,
                       itemBuilder: (BuildContext context, int index) {
                         return _buildCard(

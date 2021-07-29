@@ -5,4 +5,8 @@ const String requestURL = "requestURL";
 const String onesiganlAppId = "YOUR-ONESIGNAL-APP-ID";
 const String mixpanelToken = "YOUR-MIXPANEL-TOKEN";
 
+// test용 유닛
+// https://developers.google.com/admob/android/test-ads#sample%5C_ad%5C_units
+const String bottomBannerAdUnitId = "ca-app-pub-3940256099942544/6300978111";
+
 final Color selectedColor = Colors.green;
