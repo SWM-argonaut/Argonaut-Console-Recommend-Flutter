@@ -71,24 +71,36 @@ class _DetailPageState extends State<DetailPage> with RouteAware {
     AnalyticsBloc.onDetail(widget.switchGame?.idx, widget.switchGame?.title);
 
     return Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          title: Text("${widget.switchGame?.title}",
-              style: TextStyle(
-                color: Colors.black,
-              )),
-          centerTitle: true,
-        ),
-        body: LayoutBuilder(builder: (BuildContext context, constraints) {
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text("${widget.switchGame?.title}",
+            style: TextStyle(
+              color: Colors.black,
+            )),
+        centerTitle: true,
+      ),
+      body: Stack(children: [
+        Container(),
+        LayoutBuilder(builder: (BuildContext context, constraints) {
           return SingleChildScrollView(
               child: Column(
             children: <Widget>[
               _photos(context, widget.switchGame, constraints),
               _content(context, widget.switchGame),
-              _bottomContent(widget.switchGame)
+              _bottomContent(widget.switchGame),
+              Container(
+                height: 400,
+              )
             ],
           ));
-        }));
+        }),
+        Positioned(
+            bottom: 0,
+            child: BannerAdWidget(
+              bannerAdUnitId: bottomBannerAdUnitId,
+            ))
+      ]),
+    );
   }
 }
 
