@@ -4,13 +4,16 @@ import 'package:flutter/material.dart';
 
 import 'package:firebase_analytics/firebase_analytics.dart';
 
-import 'package:intl/intl.dart';
 import 'package:expandable/expandable.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
+import 'package:console_game_db/configs.dart';
+
 import 'package:console_game_db/block/list.dart' show SwitchGameListBloc;
 import 'package:console_game_db/block/analytics.dart' show AnalyticsBloc;
+
+import 'package:console_game_db/widget/ads.dart';
 
 import 'package:console_game_db/data_class/search.dart';
 
@@ -68,25 +71,24 @@ class _DetailPageState extends State<DetailPage> with RouteAware {
     AnalyticsBloc.onDetail(widget.switchGame?.idx, widget.switchGame?.title);
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: Text("${widget.switchGame?.title}",
-            style: TextStyle(
-              color: Colors.black,
-            )),
-        centerTitle: true,
-      ),
-      body: LayoutBuilder(builder: (BuildContext context, constraints) {
-        return SingleChildScrollView(
-            child: Column(
-          children: <Widget>[
-            _photos(context, widget.switchGame, constraints),
-            _content(context, widget.switchGame),
-            _bottomContent(widget.switchGame)
-          ],
-        ));
-      }),
-    );
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          title: Text("${widget.switchGame?.title}",
+              style: TextStyle(
+                color: Colors.black,
+              )),
+          centerTitle: true,
+        ),
+        body: LayoutBuilder(builder: (BuildContext context, constraints) {
+          return SingleChildScrollView(
+              child: Column(
+            children: <Widget>[
+              _photos(context, widget.switchGame, constraints),
+              _content(context, widget.switchGame),
+              _bottomContent(widget.switchGame)
+            ],
+          ));
+        }));
   }
 }
 
@@ -153,12 +155,7 @@ ExpandablePanel _info(SwitchGame? switchGame) {
         )),
     collapsed: Container(),
     expanded: Text(
-      '''
-출시일 : ${DateFormat('yyyy년 MM월 dd일').format(switchGame!.releaseDate!)}
-장  르 : ${switchGame.genres?.map((e) => genreName[e.index])}
-언  어 : ${switchGame.languages?.map((e) => languageName[e.index])}
-플레이 인원수 : ${switchGame.playerCount}
-      ''',
+      switchGame!.getInfo(),
       softWrap: true,
       style: TextStyle(color: Colors.black),
     ),

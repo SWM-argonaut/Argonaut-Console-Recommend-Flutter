@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 import 'package:console_game_db/data_class/search.dart';
 import 'package:console_game_db/functions/text.dart';
 
@@ -88,9 +90,6 @@ class SwitchGame {
     _languages = languageListToSet(json['languages']?.cast<String>());
     _playerCount = json['playerCount'];
     _images = json['images']?.cast<String>();
-    _releaseDate = json['releaseDate'] != null
-        ? DateTime.parse(json['releaseDate'])
-        : null;
     _salePeriod = json['salePeriod'] != null
         ? new SalePeriod.fromJson(json['salePeriod'])
         : null;
@@ -99,6 +98,13 @@ class SwitchGame {
         : null;
     _coupang =
         json['coupang'] != null ? new Coupang.fromJson(json['coupang']) : null;
+
+    try {
+      DateTime.parse("$releaseDate");
+      _releaseDate = DateTime.parse(json['releaseDate']);
+    } catch (e) {
+      _releaseDate = null;
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -117,6 +123,27 @@ class SwitchGame {
         this._nintendoStore != null ? this._nintendoStore?.toJson() : null;
     data['coupang'] = this._coupang != null ? this._coupang?.toJson() : null;
     return data;
+  }
+
+  String getInfo() {
+    String _date = "데이터가 없습니다.";
+    String _genre =
+        genres?.map((e) => genreName[e.index]).toString() ?? "데이터가 없습니다.";
+    String _languages =
+        languages?.map((e) => languageName[e.index]).toString() ?? "데이터가 없습니다.";
+    String _playerCount = playerCount != null ? "$playerCount명" : "데이터가 없습니다.";
+
+    try {
+      DateTime.parse("$releaseDate");
+      _date = DateFormat('yyyy년 MM월 dd일').format(releaseDate!);
+    } catch (e) {}
+
+    return '''
+출시일 : $_date
+장  르 : $_genre
+언  어 : $_languages
+플레이 인원수 : $_playerCount
+      ''';
   }
 }
 
