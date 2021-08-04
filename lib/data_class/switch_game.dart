@@ -38,6 +38,7 @@ class SwitchGame {
   String? _playerCount;
   DateTime? _releaseDate;
   List<String>? _images;
+  bool _onSale = false;
   SalePeriod? _salePeriod;
   NintendoStore? _nintendoStore;
   Coupang? _coupang;
@@ -66,6 +67,8 @@ class SwitchGame {
     this._salePeriod = salePeriod;
     this._nintendoStore = nintendoStore;
     this._coupang = coupang;
+    this._onSale = (this._coupang?.salePrice != null ||
+        this._nintendoStore?.salePrice != null);
   }
 
   String? get title => _title;
@@ -76,6 +79,7 @@ class SwitchGame {
   String? get playerCount => _playerCount;
   DateTime? get releaseDate => _releaseDate;
   List<String>? get images => _images;
+  bool get onSale => _onSale;
   SalePeriod? get salePeriod => _salePeriod;
   NintendoStore? get nintendoStore => _nintendoStore;
   Coupang? get coupang => _coupang;
@@ -99,8 +103,10 @@ class SwitchGame {
     _coupang =
         json['coupang'] != null ? new Coupang.fromJson(json['coupang']) : null;
 
+    this._onSale = (this._coupang?.salePrice != null ||
+        this._nintendoStore?.salePrice != null);
+
     try {
-      DateTime.parse("$releaseDate");
       _releaseDate = DateTime.parse(json['releaseDate']);
     } catch (e) {
       _releaseDate = null;

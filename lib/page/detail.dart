@@ -206,7 +206,7 @@ Container _links(BuildContext context, SwitchGame? switchGame) {
       children: [
         Padding(
             padding: EdgeInsets.all(10),
-            child: _priceWidget(
+            child: priceWidget(
               price: switchGame!.coupang!.price!,
               salePrice: switchGame.coupang!.salePrice,
               shopName: "쿠팡",
@@ -235,7 +235,7 @@ Container _links(BuildContext context, SwitchGame? switchGame) {
       children: [
         Padding(
             padding: EdgeInsets.all(10),
-            child: _priceWidget(
+            child: priceWidget(
               price: switchGame!.nintendoStore!.price!,
               salePrice: switchGame.nintendoStore!.salePrice,
               shopName: "e샵",
@@ -274,39 +274,4 @@ Widget _bottomContent(SwitchGame? switchGame) {
         ));
   }
   return Container();
-}
-
-Widget _priceWidget(
-    {required int price, int? salePrice, required String shopName}) {
-  if (salePrice != null) {
-    int? _discountRate = ((price - salePrice) / price * 100).toInt();
-    return Row(children: [
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "$_discountRate% 할인",
-            style: TextStyle(color: Colors.red),
-          ),
-          Text("$shopName 가격 : "),
-        ],
-      ),
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Text(
-            "${priceString(price)}",
-            style: TextStyle(
-              decoration: TextDecoration.lineThrough,
-              decorationThickness: 3,
-              fontSize: 10,
-            ),
-          ),
-          Text("${priceString(salePrice)}"),
-        ],
-      )
-    ]);
-  } else {
-    return Text("$shopName 가격 : ${priceString(price)}");
-  }
 }

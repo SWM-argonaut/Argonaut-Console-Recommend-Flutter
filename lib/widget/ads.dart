@@ -21,6 +21,13 @@ class BannerAdWidget extends StatefulWidget {
 
 class BannerAdWidgetState extends State<BannerAdWidget> {
   @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return FutureBuilder<AdSize?>(
       future: AdSize.getAnchoredAdaptiveBannerAdSize(

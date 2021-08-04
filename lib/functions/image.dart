@@ -10,19 +10,16 @@ import 'package:console_game_db/configs.dart';
 import 'package:console_game_db/data_class/switch_game.dart';
 
 Widget getThumbnail(SwitchGame? item) {
-  const double _height = 50;
-  const double _width = 80;
+  const double _height = 200;
+  const double _width = 120;
 
   if (item!.images != null && item.images!.length > 0) {
-    return Container(
-        height: _height,
-        width: _width,
-        child: CachedNetworkImage(
-          imageUrl: "$requestImageURLBase${item.idx}/${item.images![0]}",
-          placeholder: (context, url) =>
-              Center(child: CircularProgressIndicator()),
-          errorWidget: (context, url, error) => Icon(Icons.image_not_supported),
-        ));
+    return CachedNetworkImage(
+      fit: BoxFit.fill,
+      imageUrl: "$requestImageURLBase${item.idx}/${item.images![0]}",
+      placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+      errorWidget: (context, url, error) => Icon(Icons.image_not_supported),
+    );
   }
   return Container(
       height: _height,

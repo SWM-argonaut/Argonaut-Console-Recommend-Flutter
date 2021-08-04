@@ -53,6 +53,8 @@ dependencies:
 
   keyboard_utils: ^1.3.0
   carousel_slider: ^4.0.0
+  appsflyer_sdk: ^6.2.4+4-nullsafety
+  firebase_messaging: ^10.0.4
   
   # webview_flutter: ^2.0.9
 
@@ -112,4 +114,5 @@ flutter:
 
   assets:
     - assets/images/rocket.png
+    - assets/images/sale-128.png
     - assets/icon/icon1.0.0.png

@@ -95,19 +95,33 @@ Card _buildCard(BuildContext context, SwitchGame? item) {
   );
 }
 
-ListTile _buildListTile(BuildContext context, SwitchGame? item) {
+Widget _buildListTile(BuildContext context, SwitchGame? item) {
   const Color _ratingBackgroundColor = Color.fromRGBO(194, 194, 214, 0.2);
   const Color _ratingValueColor = Colors.amber;
 
-  return ListTile(
-    contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+  late Widget _price;
+
+  if (item!.onSale) {
+    if (item.nintendoStore?.salePrice != null) {
+      _price = salePriceWidget(
+          price: item.nintendoStore!.price!,
+          salePrice: item.nintendoStore?.salePrice);
+    } else {
+      _price = salePriceWidget(
+          price: item.coupang!.price!, salePrice: item.coupang?.salePrice);
+    }
+  } else {
+    _price = Text(priceString(item.nintendoStore?.price),
+        style: TextStyle(color: Colors.black));
+  }
+
+  ListTile _listTile = ListTile(
+    contentPadding: EdgeInsets.all(5),
     leading: Container(
-        padding: EdgeInsets.only(right: 12.0),
-        decoration: new BoxDecoration(
-            border: new Border(
-                right: new BorderSide(width: 1.0, color: Colors.white))),
+        width: 110,
+        margin: EdgeInsets.only(left: 6),
         child: getThumbnail(item)),
-    title: Text("${item?.title}",
+    title: Text("${item.title}",
         style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         maxLines: 1,
         overflow: TextOverflow.ellipsis),
@@ -117,7 +131,7 @@ ListTile _buildListTile(BuildContext context, SwitchGame? item) {
             flex: 6,
             child: Container(
               child: RatingBarIndicator(
-                rating: (item?.coupang?.rating ?? 0).toDouble() / 20,
+                rating: (item.coupang?.rating ?? 0).toDouble() / 20,
                 itemBuilder: (context, index) => Icon(
                   Icons.star,
                   color: _ratingValueColor,
@@ -130,10 +144,7 @@ ListTile _buildListTile(BuildContext context, SwitchGame? item) {
             )),
         Expanded(
           flex: 4,
-          child: Padding(
-              padding: EdgeInsets.only(left: 10.0),
-              child: Text(priceString(item?.nintendoStore?.price),
-                  style: TextStyle(color: Colors.black))),
+          child: Padding(padding: EdgeInsets.only(left: 10.0), child: _price),
         )
       ],
     ),
@@ -145,4 +156,37 @@ ListTile _buildListTile(BuildContext context, SwitchGame? item) {
               builder: (context) => DetailPage(switchGame: item)));
     },
   );
+
+  if (item.onSale || item.coupang != null) {
+    List<Widget> _children = [];
+
+    if (item.coupang != null) {
+      _children.add(Container(
+        height: 29,
+        padding: EdgeInsets.only(left: 10, bottom: 2, right: 4),
+        child: Image.asset("assets/images/rocket.png"),
+      ));
+    }
+
+    if (item.onSale) {
+      _children.add(Container(
+        height: 30,
+        padding: EdgeInsets.only(left: 7),
+        child: Image.asset("assets/images/sale-128.png"),
+      ));
+    }
+
+    return Stack(clipBehavior: Clip.none, children: [
+      _listTile,
+      Positioned(
+        top: -6,
+        right: -6,
+        child: Row(
+          children: _children,
+        ),
+      ),
+    ]);
+  }
+
+  return _listTile;
 }

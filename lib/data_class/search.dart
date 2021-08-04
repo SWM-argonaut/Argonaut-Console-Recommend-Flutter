@@ -175,8 +175,7 @@ class SearchFilter {
 
   bool checkItem(SwitchGame? item) {
     if (_onDiscount) {
-      if (item?.coupang?.salePrice == null &&
-          item?.nintendoStore?.salePrice == null) {
+      if (!item!.onSale) {
         return false;
       }
     }
